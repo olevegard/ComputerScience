@@ -3,39 +3,54 @@
 #include "LinkedList.h"
 
 template < typename Object >
-class ConstIterator
+class Iterator
 {
 	public:
-		ConstIterator( )
-			:	current( nullptr )
+		Iterator( )
+			:	Iterator( nullptr )
 		{
 
+		}
+		Iterator( Node<Object>* p )
+			:	current( p )
+		{
 		}
 		const Object& operator* () const
 		{
 			return Retrieve();
 		}
 
-		ConstIterator operator++ ( int )
+		Iterator operator++ ( int )
 		{
-			ConstIterator prev = *this;
+			Iterator prev = *this;
 			++(*this);
 
 			return prev;
 		}
-		ConstIterator &operator++ ()
+		Iterator &operator++ ()
 		{
 			current = current->next;
 			return *this;
 		}
 
-		bool operator==( const ConstIterator &other  )
+		Iterator &operator-- ()
+		{
+			current = current->prev;
+			return *this;
+		}
+
+		bool operator==( const Iterator &other  )
 		{
 			return ( current == other.current );
 		}
-		bool operator!=( const ConstIterator *other )
+		bool operator!=( const Iterator *other )
 		{
 			return !( *this == other );
+		}
+
+		Node< Object >* GetNode()
+		{
+			return current;
 		}
 	private:
 
@@ -44,10 +59,7 @@ class ConstIterator
 		return current->data;
 	}
 	/*
-		ConstIterator( Node<Object>* p )
-			:	current( p )
-		{
-		}
+		
 		*/
 
 	Node< Object >* current;

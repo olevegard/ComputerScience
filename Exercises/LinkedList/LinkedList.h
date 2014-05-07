@@ -61,43 +61,43 @@ class List
 		{
 			return *tail->prev;
 		}
-		Node<Object>* Begin()
+		Iterator<Object> Begin()
 		{
-			return head->next;
+			return Iterator< Object > ( head->next );
 		}
-		Node<Object>* End()
+		Iterator< Object > End()
 		{
-			return tail;
+			return Iterator< Object >( tail );
 		}
 		// Push / Pop
 		// ======================================================
-		Node<Object>* PushFront( const Object &obj )
+		Iterator<Object> PushFront( const Object &obj )
 		{
 			std::cout << "PushFront " << obj << std::endl;
 			return Insert( Begin(), obj );
 		}
-		Node<Object>* PushBack( const Object &obj )
+		Iterator<Object> PushBack( const Object &obj )
 		{
 			std::cout << "PushBack " << obj << std::endl;
 			return Insert( End(), obj );
 		}
-		Node<Object>* PopBack( )
+		Iterator<Object> PopBack( )
 		{
 			std::cout << "PopBack\n";
-			return Erase( End()->prev );
+			return Erase( --End() );
 		}
-		Node<Object>* PopFront( )
+		Iterator<Object> PopFront( )
 		{
 			std::cout << "PopFront\n";
 			return Erase( Begin() );
 		}
+
 		// Insert / Erase
 		// ======================================================
-
-		//head -> next == tail
-		Node<Object>* Insert( Node< Object >* node, const Object &obj )
+		Iterator<Object> Insert( Iterator< Object > iterator, const Object &obj )
 		{
 			std::cout << "\tInserting " << obj << std::endl;
+			auto node = iterator.GetNode();
 			Node< Object >* prevNode = node->prev;
 			Node< Object >* newNode = new Node< Object >( obj, prevNode, node ); 
 
@@ -106,10 +106,11 @@ class List
 
 			++size;
 
-			return newNode;
+			return Iterator< Object >(newNode);
 		}
-		Node<Object>* Erase( Node< Object >* toRemove )
+		Iterator<Object> Erase( Iterator< Object > iterator )
 		{
+			Node< Object >* toRemove = iterator.GetNode();
 			std::cout << "\tReomving " << toRemove->data << std::endl;
 			auto next = toRemove->next;
 			auto prev = toRemove->prev;
@@ -122,7 +123,7 @@ class List
 
 			--size;
 
-			return next;
+			return Iterator< Object >(next);
 		}
 		void Print()
 		{
