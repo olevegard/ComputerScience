@@ -125,6 +125,33 @@ class List
 
 			return Iterator< Object >(next);
 		}
+		Iterator<Object> Erase( Iterator< Object > iteratorStart, Iterator< Object > iteratorEnd  )
+		{
+			std::cout << "\tErasing : " << iteratorStart.GetNode()->data << " to " << iteratorEnd.GetNode()->data << std::endl;
+			Iterator< Object > current = iteratorStart;
+			Iterator< Object > end( iteratorEnd.GetNode()->next );
+
+			while (  current != end )
+			{
+				Erase( current++ );
+			}
+			/*
+			Node< Object >* toRemove = iterator.GetNode();
+			std::cout << "\tReomving " << toRemove->data << std::endl;
+			auto next = toRemove->next;
+			auto prev = toRemove->prev;
+
+			// Set next and prev of the node before and after toRemove
+			prev->next = next;
+			next->prev = prev;
+			
+			delete toRemove;
+
+			--size;
+			*/
+
+			return Iterator< Object >(current);
+		}
 		void Print()
 		{
 			std::cout << "Printing list : \n";

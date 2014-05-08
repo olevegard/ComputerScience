@@ -43,7 +43,7 @@ class Iterator
 		{
 			return ( current == other.current );
 		}
-		bool operator!=( const Iterator *other )
+		bool operator!=( const Iterator &other )
 		{
 			return !( *this == other );
 		}
