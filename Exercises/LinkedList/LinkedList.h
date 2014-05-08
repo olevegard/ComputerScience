@@ -152,15 +152,36 @@ class List
 
 			return Iterator< Object >(current);
 		}
+		void BubbleSort()
+		{
+			bool sorted = false;
+			auto end = End();
+
+			while ( !sorted )
+			{
+				sorted = true;
+
+				for ( auto current = Begin(); current != end ; ++current )
+				{
+					Object& data1 = current.GetNode()->data;
+					Object& data2 = current.GetNode()->next->data;
+
+					if ( data1 > data2 )
+					{
+						std::swap( data1, data2 );
+						sorted = false;
+					}
+				}
+			}
+		}
 		void Print()
 		{
 			std::cout << "Printing list : \n";
-			Node<Object>* current = head->next;
+			auto end = End();
 
-			while ( current != tail && current != nullptr )
+			for ( auto current = Begin(); current != end; ++current  )
 			{
-				std::cout << "\t" << current->data << "\n";
-				current = current->next;
+				std::cout << "\t" << *current << "\n";
 			}
 		}
 

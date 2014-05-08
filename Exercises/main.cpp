@@ -29,6 +29,21 @@ int main()
 	list.Erase( first, second );
 	list.Print();
 
+
+	list.PushBack( rand() % 100 );
+	list.PushBack( rand() % 100 );
+	list.PushBack( rand() % 100 );
+	list.PushBack( rand() % 100 );
+	list.PushBack( rand() % 100 );
+	list.PushBack( rand() % 100 );
+	list.PushBack( rand() % 100 );
+	list.PushBack( rand() % 100 );
+
+	list.Print();
+	list.BubbleSort();
+	list.Print();
+
+
 /*
 	auto num444 = list.PushFront( 444 );
 	list.Print();
