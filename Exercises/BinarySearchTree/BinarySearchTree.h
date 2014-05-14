@@ -1,6 +1,8 @@
 #pragma once
 
 #include <queue>
+#include <stack>
+#include <iostream>
 
 template< typename Comparable >
 class BinarySearchTree
@@ -32,14 +34,18 @@ class BinarySearchTree
 		Insert( 90 );
 
 
-		Insert( 2 );
-		Insert( 18 );
+		Insert( 8 );
+		Insert( 4 );
 
 		FindMin();
 		FindMax();
 
 		for ( int32_t i = 0 ; i <= 100 ; ++i )
-			Contains( i );
+		{
+			if ( Contains( i ) )
+				std::cout << i << ". exists\n";
+		}
+		std::cin.ignore();
 	}
 	const BinarySearchTree& operator=( const BinarySearchTree &rhs );
 
@@ -73,77 +79,24 @@ class BinarySearchTree
 	}
 	bool Contains( const Comparable &value ) const
 	{
-		BinaryNode* current = root;
+		//BinaryNode* current = root;
+		return Contains( value, root );
 
-		while ( current )
-		{
-			if ( current->element == value )
-				return true;
-			else if ( current->element < value )
-				current = current->rightChild;
-			else if ( current->element > value )
-				current = current->leftChild;
-		}
-
-		return false;
+		//return false;
 	}
 	void PrintTree() const
 	{
-	/*
-		std::cout << "\t\t\t\t    " << root->element << std::endl;
-
-		std::cout << "\t\t\t";
-		PrintTree( root );
-		std::cout << std::endl;
-
-		std::cout << "\t\t    ";
-		PrintTree( root->leftChild );
-		PrintTree( root->rightChild );
-
-		std::cout << std::endl;
-
-		PrintTree( root->leftChild->leftChild );
-		PrintTree( root->leftChild->rightChild );
-
-		PrintTree( root->rightChild->leftChild  );
-		PrintTree( root->rightChild->rightChild  );
-
-
-		PrintTree( root->leftChild->leftChild->leftChild );
-		PrintTree( root->leftChild->rightChild->leftChild  );
-
-		PrintTree( root->leftChild->leftChild->rightChild );
-		PrintTree( root->leftChild->rightChild->rightChild  );
-
-		PrintTree( root->rightChild->leftChild->leftChild  );
-		PrintTree( root->rightChild->rightChild->leftChild  );
-
-		PrintTree( root->rightChild->leftChild->rightChild  );
-		PrintTree( root->rightChild->rightChild->rightChild  );
-
-
-*/
-
-		//PrintTree( root );
-
-		//std::cout << "\t" << root->leftChild->leftChild->leftChild->element;
-		std::cout << root->element << std::endl;
-		std::cout << root->leftChild->element << std::endl;
-		std::cout << root->rightChild->element << std::endl;
-		std::cout << root->rightChild->leftChild->element << std::endl;
-		std::cout << root->rightChild->rightChild->element << std::endl;
-
-		std::cout << "\n===============================================================" << std::endl;
 		PrintTree_LevelOrder( root );
-		std::cout << "\n===============================================================" << std::endl;
-		PrintTree_LevelOrderV2( root );
-
-		/*jj
-		*/
 	}
 
 	void MakeEmpty()
 	{
+		//MakeEmpty_Recursive( root );
+		MakeEmpty_Iterative( root );
+	}
+	bool IsEmpty() const
+	{
+		return root == nullptr;
 	}
 	void Insert( Comparable value )
 	{
@@ -164,6 +117,7 @@ class BinarySearchTree
 
 	void Remove( Comparable value )
 	{
+		BinaryNode* node = FindValue(  value );
 
 	}
 
@@ -210,14 +164,83 @@ class BinarySearchTree
 
 	}
 
-	bool Contains( const Comparable &value, BinaryNode* node ) const
+	bool Contains_Iterative( const Comparable &value, BinaryNode* current ) const
 	{
+		while ( current )
+		{
+			if ( current->element == value )
+				return true;
+			else if ( current->element < value )
+				current = current->rightChild;
+			else
+				current = current->leftChild;
+		}
 
+		return false;
 	}
-
-	void MakeEmpty( BinaryNode* &node )
+	bool Contains( const Comparable &value, BinaryNode* current ) const
 	{
+		if ( current == nullptr )
+			return false;
 
+		if ( current->element == value )
+			return true;
+		else if ( current->element < value )
+			return Contains( value, current->rightChild );
+		else
+			return Contains( value, current->leftChild);
+	}
+	void MakeEmpty_Recursive( BinaryNode* &node )
+	{
+		if ( node == nullptr )
+			return;
+
+		MakeEmpty_Recursive( node->leftChild );
+		MakeEmpty_Recursive( node->rightChild );
+
+		DeleteNode( node );
+	}
+	// Delete all nodes without recursion
+	// Run time : n log n
+	//	Outer loop loops as long as there are nodes in the stack
+	//	Every node will only be added to the stack once
+	//	This means the outer loop maximum will loop n times
+	//
+	//	The inner loop will loop to the bottom of the tree which is O( log n )
+	void MakeEmpty_Iterative( BinaryNode* &current )
+	{
+		std::stack< BinaryNode* > checkedNodes;
+		do
+		{
+			// Add all left child nodes
+			while ( current != nullptr )
+			{
+				checkedNodes.push( current );
+				current = current->leftChild;
+			}
+
+			// Pop the last node
+			// Store its child 
+			// Restart loop
+			BinaryNode* popped = checkedNodes.top();
+			checkedNodes.pop();
+
+			current = popped->rightChild;
+
+			DeleteNode( popped );
+		}
+		while ( !checkedNodes.empty() || current != nullptr );
+	}
+	void DeleteNode( BinaryNode* &node )
+	{
+				std::cout <<"Deleting " << node->element << std::endl;
+
+		node->leftChild = nullptr;
+		node->rightChild = nullptr;
+
+		delete node;
+
+		node = nullptr;
 	}
 	void PrintTree( BinaryNode* node ) const
 	{
@@ -232,6 +255,12 @@ class BinarySearchTree
 	}
 	void PrintTree_LevelOrder( BinaryNode* node ) const
 	{
+		if ( IsEmpty() )
+		{
+			std::cout << "tree is empty\n";
+			return;
+			}
+
 		std::queue< BinaryNode* > nodes;
 		nodes.push ( root  );
 
@@ -249,12 +278,14 @@ class BinarySearchTree
 			if ( nodeCount == nextLevel )
 			{
 				nextLevel = nodeCount * 2;
+				/*
 				std::cout << "\nNew Level\n"
 				<< "\tNext level is : " << nextLevel
 				<< "\n\tNodes skipped this level : " << nodesSkipped
 				<< "\n\tNodes so far : " << nodeCount
 				<< std::endl;
-				//std::cout << std::endl;
+				*/
+				std::cout << std::endl;
 			}
 		}
 		std::cout << "\nNode count " << nodeCount << std::endl;
@@ -273,11 +304,9 @@ class BinarySearchTree
 
 		while ( !nodes.empty() )
 		{
-
 			int32_t nodesAdded = DoNextItem(  nodes );
 			int32_t skipped = ( 2 - nodesAdded );
 			nodesSkipped += skipped;
-
 
 			//nodeCount += 1;// working
 			++nodeCount;
@@ -315,14 +344,12 @@ class BinarySearchTree
 
 		if ( currentNode->leftChild != nullptr )
 		{
-			std::cout << " l " << currentNode->leftChild->element;
 			nodes.push ( currentNode->leftChild  );
 			++nodesAdded;
 		}
 
 		if ( currentNode->rightChild != nullptr )
 		{
-			std::cout << " r " << currentNode->rightChild ->element;
 			nodes.push ( currentNode->rightChild  );
 			++nodesAdded;
 		}
@@ -335,4 +362,20 @@ class BinarySearchTree
 
 	}
 
+	BinaryNode* FindValue( const Comparable &value )
+	{
+		BinaryNode* current = root;
+
+		while ( current )
+		{
+			if ( current->element == value )
+				return current;
+			else if ( current->element < value )
+				current = current->rightChild;
+			else if ( current->element > value )
+				current = current->leftChild;
+		}
+
+		return nullptr;
+	}
 };
