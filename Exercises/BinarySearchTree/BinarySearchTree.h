@@ -255,80 +255,35 @@ class BinarySearchTree
 	}
 	void PrintTree_LevelOrder( BinaryNode* node ) const
 	{
-		if ( IsEmpty() )
-		{
-			std::cout << "tree is empty\n";
-			return;
-			}
-
 		std::queue< BinaryNode* > nodes;
-		nodes.push ( root  );
+		nodes.push ( node  );
 
-		// The two below values might seem strange
-		// Having nodeCount start at 1 
-		int32_t nodeCount = 1; // Next node to be processed working
-		int32_t nextLevel = 2; // working
-		int32_t nodesSkipped = 0;
+		int32_t nodeCount = 1;		// Next node to be processed this iteration
+		int32_t nextLevel = 2;		// What nodecCount must be in order to move down a level
+		int32_t nodesSkipped = 0;	// Number of empty nodes.
 
 		while ( !nodes.empty() )
 		{
 			int32_t nodesAdded = DoNextItem(  nodes );
-			int32_t skipped = ( 2 - nodesAdded );
+			int32_t skippedThisTime = ( 2 - nodesAdded );
+			nodesSkipped += skippedThisTime;
 
 			++nodeCount;
-			nodesSkipped += skipped;
-			std::cout << "(" << nodesSkipped << ")\t";
+
 			if ( nodeCount == nextLevel )
 			{
 				nextLevel = nodeCount * 2;
+
+				// Skipped nodes needs to be added just once per level
 				nodeCount += nodesSkipped;
+
+				// k skipped nodes in level m
+				// Wil lead to k * 2 skipped nodes in level m + 1
+				// In other words : number of skipped nodes dobules for every level
 				nodesSkipped *= 2;
-				std::cout << "\nNew Level\n"
-				<< "\tNext level is : " << nextLevel
-				<< "\n\tNodes skipped this level : " << nodesSkipped
-				<< "\n\tNodes so far : " << nodeCount
-				<< std::endl;
 				std::cout << std::endl;
 			}
 		}
-		std::cout << "\nNode count " << nodeCount << std::endl;
-
-	}
-	void PrintTree_LevelOrderV2( BinaryNode* node ) const
-	{
-		std::queue< BinaryNode* > nodes;
-		nodes.push ( root  );
-
-		// The two below values might seem strange
-		// Having nodeCount start at 1 
-		int32_t nodeCount = 1; // Next node to be processed working
-		int32_t nextLevel = 2; // working
-		int32_t nodesSkipped = 0;
-
-		while ( !nodes.empty() )
-		{
-			int32_t nodesAdded = DoNextItem(  nodes );
-			int32_t skipped = ( 2 - nodesAdded );
-			nodesSkipped += skipped;
-
-			//nodeCount += 1;// working
-			//++nodeCount;
-			nodeCount += 1 + skipped;
-			std::cout << " skipped : " << skipped;
-			if ( nodeCount == nextLevel )
-			{
-				nextLevel = nodeCount * 2;
-				std::cout << "\nNew Level\n"
-				<< "\tNext level is : " << nextLevel
-				<< "\n\tNodes skipped this level : " << nodesSkipped
-				<< "\n\tNodes so far : " << nodeCount
-				<< std::endl;
-				//std::cout << std::endl;
-			}
-		}
-		std::cout << "\nNode count " << nodeCount << std::endl;
-		std::cout << "\nNext level " << nextLevel << std::endl;
-
 	}
 	// Dequeue next item, add it's children and print.
 	int32_t DoNextItem( std::queue< BinaryNode* > &nodes ) const
@@ -336,7 +291,10 @@ class BinarySearchTree
 		BinaryNode* currentNode = nodes.front();
 		nodes.pop();
 
-		std::cout << currentNode->element;
+		if ( currentNode == nullptr )
+			return 0;
+
+		std::cout << currentNode->element << "\t";
 
 		return AddChildrenToQueue( currentNode, nodes );
 	}
@@ -349,27 +307,22 @@ class BinarySearchTree
 
 		if ( currentNode->leftChild != nullptr )
 		{
-			std::cout << "l " << currentNode->leftChild->element << " ";
-
 			nodes.push ( currentNode->leftChild  );
 			++nodesAdded;
 		}
 
 		if ( currentNode->rightChild != nullptr )
 		{
-			std::cout << "r " << currentNode->rightChild->element;
 			nodes.push ( currentNode->rightChild  );
 			++nodesAdded;
 		}
 
-		std::cout << "\t";
 		return nodesAdded;
 	}
 	BinaryNode* Clone( BinaryNode* node ) const
 	{
 
 	}
-
 	BinaryNode* FindValue( const Comparable &value )
 	{
 		BinaryNode* current = root;
