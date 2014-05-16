@@ -4,91 +4,113 @@
 #include <stack>
 #include <iostream>
 
+#include "BinaryNode.h"
+
 template< typename Comparable >
 class BinarySearchTree
 {
 	public:
 	BinarySearchTree()
 	{
-		root = new BinaryNode( 50, nullptr, nullptr );
+		root = new BinaryNode< Comparable >( 50, nullptr, nullptr );
+		root->height = 0;
 
+/*
+		root->rightChild = new BinaryNode< Comparable >( 100, nullptr, nullptr );
+		root->rightChild->leftChild = new BinaryNode< Comparable >( 75, nullptr, nullptr ); 
+		root->rightChild->leftChild->leftChild  = new BinaryNode< Comparable >( 60, nullptr, nullptr ); 
+		*/
+		Insert( 100 );
+		Insert( 75 );
+		Insert( 60 );
+
+		PrintTree();
+		Rotate_LL( root->rightChild );
+		PrintTree();
+/*
 		Insert( 25 );
 		Insert( 75 );
 
 		Insert( 12 );
 		Insert( 37 );
-
 		Insert( 67 );
+		Insert( 87 );
+
+		Insert( 12 );
+		Insert( 37 );
+		Insert( 67 )
 		Insert( 87 );
 
 		Insert( 6 );
 		Insert( 15 );
-
 		Insert( 30 );
 		Insert( 47 );
-
 		Insert( 55 );
 		Insert( 70 );
+		//Insert( 80 );
+		Insert( 105 );
 
-		Insert( 80 );
-		Insert( 90 );
 
-
-		Insert( 8 );
 		Insert( 4 );
+		Insert( 8 );
+		Insert( 14 );
+		Insert( 18 );
+		Insert( 28 );
+		Insert( 35 );
+		Insert( 45 );
+		Insert( 48 );
+		Insert( 52 );
+		Insert( 60 );
+		Insert( 68 );
+		Insert( 72 );
+		//Insert( 78 );
+		//Insert( 85 );
+		Insert( 110 );
+		Insert( 100 );
 
-		FindMin();
-		FindMax();
+		Insert( 2 );
 
-		for ( int32_t i = 0 ; i <= 100 ; ++i )
-		{
-			if ( Contains( i ) )
-				std::cout << i << ". exists\n";
-		}
+		Insert( 1 );
+
+		Insert( 105 );
+		*/
+
+		std::cout << "Max element is : " << FindMax() << std::endl;
+		std::cout << "Max element is : " << FindMax( root )->element << std::endl;
+
+
+		std::cout << "Min element is : " << FindMin() << std::endl;
+		std::cout << "Min element is : " << FindMin( root )->element << std::endl;
 		std::cin.ignore();
 	}
 	const BinarySearchTree& operator=( const BinarySearchTree &rhs );
 
 	const Comparable& FindMin() const
 	{
-		BinaryNode* current = root;
-		BinaryNode* prev = root;
-
-		while ( current )
-		{
-			prev = current;
-			current = current->leftChild;
-		}
-
-		std::cout << "Min element is : " << prev->element << std::endl;
-		return prev->element;
+		BinaryNode< Comparable >* node = FindMin_Iterative( root );
+		return node->element;
 	}
 	const Comparable& FindMax() const
 	{
-		BinaryNode* current = root;
-		BinaryNode* prev = root;
-
-		while ( current )
-		{
-			prev = current;
-			current = current->rightChild;
-		}
-
-		std::cout << "Max element is : " << prev->element << std::endl;
-		return prev->element;
+		BinaryNode< Comparable >* node = FindMax_Iterative( root );
+		return node->element;
 	}
 	bool Contains( const Comparable &value ) const
 	{
 		//BinaryNode* current = root;
 		return Contains( value, root );
-
-		//return false;
 	}
 	void PrintTree() const
 	{
+		std::cout << "======================== Level-Order ========================\n";
 		PrintTree_LevelOrder( root );
+		std::cin.ignore();
+		/*
+		std::cout << "======================== In-Order ========================\n";
+		PrintTree_InOrder( root );
+		*/
+		std::cin.ignore();
 	}
-
 	void MakeEmpty()
 	{
 		//MakeEmpty_Recursive( root );
@@ -100,8 +122,8 @@ class BinarySearchTree
 	}
 	void Insert( Comparable value )
 	{
-		BinaryNode* node = root;
-		BinaryNode* prevNode = root;
+		BinaryNode< Comparable >* node = root;
+		BinaryNode< Comparable >* prevNode = root;
 
 		while ( node )
 		{
@@ -114,57 +136,74 @@ class BinarySearchTree
 
 		Insert( value, prevNode );
 	}
-
 	void Remove( Comparable value )
 	{
-		BinaryNode* node = FindValue(  value );
-
+		BinaryNode< Comparable >* node = FindValue(  value );
 	}
 
-		private:
-	struct BinaryNode
-	{
-		Comparable element;
-		BinaryNode *leftChild;
-		BinaryNode *rightChild;
+	private:
+	
+	BinaryNode<Comparable>* root;
 
-		BinaryNode( Comparable value, BinaryNode* leftChild_, BinaryNode* rightChild_ )
-		:	element( value )
-		,	leftChild( leftChild_ )
-		,	rightChild( rightChild_ )
+	// Find / Contains
+	// =================================================================================
+	BinaryNode< Comparable >* FindMin( BinaryNode< Comparable > *node ) const
+	{
+		if ( node->leftChild == nullptr )
+			return node;
+
+		return FindMin( node->leftChild );
+	}
+	BinaryNode< Comparable >* FindMin_Iterative( BinaryNode< Comparable > *node ) const
+	{
+		BinaryNode< Comparable >* current = root;
+		BinaryNode< Comparable >* prev = root;
+
+		while ( current )
 		{
+			prev = current;
+			current = current->leftChild;
 		}
-	};
-
-	BinaryNode* root;
-
-	void Insert( Comparable value, BinaryNode* &node ) const
+		return prev;
+	}
+	BinaryNode< Comparable >* FindMax( BinaryNode< Comparable > *node ) const
 	{
-		if ( value < node->element )
+		if ( node->rightChild == nullptr )
+			return node;
+
+		return FindMax( node->rightChild );
+	}
+	BinaryNode< Comparable >* FindMax_Iterative( BinaryNode< Comparable > *node ) const
+	{
+		BinaryNode< Comparable >* current = root;
+		BinaryNode< Comparable >* prev = root;
+
+		while ( current )
 		{
-			node->leftChild = new BinaryNode( value, nullptr, nullptr );
+			prev = current;
+			current = current->rightChild;
 		}
-		if ( value > node->element )
+
+		return prev;
+	}
+
+	BinaryNode< Comparable >* FindValue( const Comparable &value )
+	{
+		BinaryNode< Comparable >* current = root;
+
+		while ( current )
 		{
-			node->rightChild = new BinaryNode( value, nullptr, nullptr );
+			if ( current->element == value )
+				return current;
+			else if ( current->element < value )
+				current = current->rightChild;
+			else if ( current->element > value )
+				current = current->leftChild;
 		}
+
+		return nullptr;
 	}
-
-	void Remove( Comparable value, BinaryNode* &node ) const
-	{
-
-	}
-
-	BinaryNode* FindMin( BinaryNode *node ) const
-	{
-
-	}
-	BinaryNode* FindMax( BinaryNode *node ) const
-	{
-
-	}
-
-	bool Contains_Iterative( const Comparable &value, BinaryNode* current ) const
+	bool Contains_Iterative( const Comparable &value, BinaryNode< Comparable >* current ) const
 	{
 		while ( current )
 		{
@@ -178,7 +217,7 @@ class BinarySearchTree
 
 		return false;
 	}
-	bool Contains( const Comparable &value, BinaryNode* current ) const
+	bool Contains( const Comparable &value, BinaryNode< Comparable >* current ) const
 	{
 		if ( current == nullptr )
 			return false;
@@ -190,72 +229,32 @@ class BinarySearchTree
 		else
 			return Contains( value, current->leftChild);
 	}
-	void MakeEmpty_Recursive( BinaryNode* &node )
+	
+
+	// Tree traversal / Printing
+	// =====================================================================================================================================
+	void PrintTree_PreOrder( BinaryNode< Comparable >* node ) const
 	{
 		if ( node == nullptr )
 			return;
 
-		MakeEmpty_Recursive( node->leftChild );
-		MakeEmpty_Recursive( node->rightChild );
-
-		DeleteNode( node );
+		PrintTree_InOrder( node->leftChild );
+		std::cout << "\n" << node->element;
+		PrintTree_InOrder( node->rightChild );
 	}
-	// Delete all nodes without recursion
-	// Run time : n log n
-	//	Outer loop loops as long as there are nodes in the stack
-	//	Every node will only be added to the stack once
-	//	This means the outer loop maximum will loop n times
-	//
-	//	The inner loop will loop to the bottom of the tree which is O( log n )
-	void MakeEmpty_Iterative( BinaryNode* &current )
-	{
-		std::stack< BinaryNode* > checkedNodes;
-		do
-		{
-			// Add all left child nodes
-			while ( current != nullptr )
-			{
-				checkedNodes.push( current );
-				current = current->leftChild;
-			}
-
-			// Pop the last node
-			// Store its child 
-			// Restart loop
-			BinaryNode* popped = checkedNodes.top();
-			checkedNodes.pop();
-
-			current = popped->rightChild;
-
-			DeleteNode( popped );
-		}
-		while ( !checkedNodes.empty() || current != nullptr );
-	}
-	void DeleteNode( BinaryNode* &node )
-	{
-				std::cout <<"Deleting " << node->element << std::endl;
-
-		node->leftChild = nullptr;
-		node->rightChild = nullptr;
-
-		delete node;
-
-		node = nullptr;
-	}
-	void PrintTree( BinaryNode* node ) const
+	
+	void PrintTree_InOrder( BinaryNode< Comparable >* node ) const
 	{
 		if ( node == nullptr )
-		{
 			return;
-		}
 
-		PrintTree( node->leftChild );
-		std::cout << "\t" << node->element;
-		PrintTree( node->rightChild );
+		PrintTree_InOrder( node->leftChild );
+		std::cout << "\n" << node->element;
+		PrintTree_InOrder( node->rightChild );
 	}
-	void PrintTree_LevelOrder( BinaryNode* node ) const
+	void PrintTree_LevelOrder( BinaryNode< Comparable >* node ) const
 	{
-		std::queue< BinaryNode* > nodes;
+		std::queue< BinaryNode< Comparable >* > nodes;
 		nodes.push ( node  );
 
 		int32_t nodeCount = 1;		// Next node to be processed this iteration
@@ -286,57 +285,132 @@ class BinarySearchTree
 		}
 	}
 	// Dequeue next item, add it's children and print.
-	int32_t DoNextItem( std::queue< BinaryNode* > &nodes ) const
+	int32_t DoNextItem( std::queue< BinaryNode< Comparable >* > &nodes ) const
 	{
-		BinaryNode* currentNode = nodes.front();
+		BinaryNode< Comparable >* currentNode = nodes.front();
 		nodes.pop();
 
 		if ( currentNode == nullptr )
 			return 0;
 
-		std::cout << currentNode->element << "\t";
+		std::cout << currentNode->element;// << "\t";// << currentNode->height << ")   ";
 
 		return AddChildrenToQueue( currentNode, nodes );
 	}
 
 	// Add children of node currentNode to nodes
 	// Null pointers are not added
-	int32_t AddChildrenToQueue( BinaryNode* currentNode, std::queue< BinaryNode* > &nodes ) const
+	int32_t AddChildrenToQueue( BinaryNode< Comparable >* currentNode, std::queue< BinaryNode< Comparable >* >  &nodes ) const
 	{
 		int32_t nodesAdded = 0;
 
 		if ( currentNode->leftChild != nullptr )
 		{
+			std::cout << " l " << currentNode->leftChild->element;
 			nodes.push ( currentNode->leftChild  );
 			++nodesAdded;
 		}
 
 		if ( currentNode->rightChild != nullptr )
 		{
+			std::cout << " r " << currentNode->rightChild->element;
 			nodes.push ( currentNode->rightChild  );
 			++nodesAdded;
 		}
 
+		std::cout << "\t";
 		return nodesAdded;
 	}
-	BinaryNode* Clone( BinaryNode* node ) const
+	// Manipulation
+	// =====================================================================================================================================
+	void Insert( Comparable value, BinaryNode<Comparable>* &node ) const
 	{
+		int32_t height = node->height + 1;
 
-	}
-	BinaryNode* FindValue( const Comparable &value )
-	{
-		BinaryNode* current = root;
-
-		while ( current )
+		if ( value < node->element )
 		{
-			if ( current->element == value )
-				return current;
-			else if ( current->element < value )
-				current = current->rightChild;
-			else if ( current->element > value )
-				current = current->leftChild;
+			node->leftChild = new BinaryNode< Comparable >( value, nullptr, nullptr );
+			node->leftChild->height = height;
 		}
-
-		return nullptr;
+		if ( value > node->element )
+		{
+			node->rightChild = new BinaryNode< Comparable >( value, nullptr, nullptr );
+			node->rightChild->height = height;
+		}
 	}
+
+	void Remove( Comparable value, BinaryNode< Comparable >* &node ) const
+	{
+			}
+
+	void Rotate_LL( BinaryNode< Comparable >* &head ) const
+	{
+		auto headCopy = head;
+		auto left = head->leftChild;
+
+		head = left;					// Top of the rotation is now the left child of the previous node
+		head->rightChild = headCopy;	// The old top is now the left child of the new top node
+
+		headCopy->rightChild = nullptr;
+		headCopy->leftChild = nullptr;
+	}
+	void DeleteNode( BinaryNode< Comparable >* &node )
+	{
+		std::cout <<"Deleting " << node->element << std::endl;
+
+		node->leftChild = nullptr;
+		node->rightChild = nullptr;
+
+		delete node;
+
+		node = nullptr;
+	}
+	BinaryNode< Comparable >* Clone( BinaryNode< Comparable >* node ) const
+	{
+
+	}
+	
+	void MakeEmpty_Recursive( BinaryNode< Comparable >* &node )
+	{
+		if ( node == nullptr )
+			return;
+
+		MakeEmpty_Recursive( node->leftChild );
+		MakeEmpty_Recursive( node->rightChild );
+
+		DeleteNode( node );
+	}
+	// Delete all nodes without recursion
+	// Run time : n log n
+	//	Outer loop loops as long as there are nodes in the stack
+	//	Every node will only be added to the stack once
+	//	This means the outer loop maximum will loop n times
+	//
+	//	The inner loop will loop to the bottom of the tree which is O( log n )
+	void MakeEmpty_Iterative( BinaryNode< Comparable >* &current )
+	{
+		std::stack< BinaryNode< Comparable >* > checkedNodes;
+		do
+		{
+			// Add all left child nodes
+			while ( current != nullptr )
+			{
+				checkedNodes.push( current );
+				current = current->leftChild;
+			}
+
+			// Pop the last node
+			// Store its child 
+			// Restart loop
+			BinaryNode< Comparable >* popped = checkedNodes.top();
+			checkedNodes.pop();
+
+			current = popped->rightChild;
+
+			DeleteNode( popped );
+		}
+		while ( !checkedNodes.empty() || current != nullptr );
+	}
+
+
 };
