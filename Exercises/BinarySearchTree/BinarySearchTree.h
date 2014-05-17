@@ -20,12 +20,20 @@ class BinarySearchTree
 		root->rightChild->leftChild = new BinaryNode< Comparable >( 75, nullptr, nullptr ); 
 		root->rightChild->leftChild->leftChild  = new BinaryNode< Comparable >( 60, nullptr, nullptr ); 
 		*/
-		Insert( 100 );
-		Insert( 75 );
 		Insert( 60 );
+		Insert( 70 );
+		Insert( 65 );
+		Insert( 90 );
+
+		Insert( 40 );
+		Insert( 30 );
+		Insert( 35 );
+		Insert( 10 );
 
 		PrintTree();
-		Rotate_LL( root->rightChild );
+		Rotate_RR( root->rightChild );
+		PrintTree();
+		//Rotate_LL( root->leftChild );
 		PrintTree();
 /*
 		Insert( 25 );
@@ -229,8 +237,6 @@ class BinarySearchTree
 		else
 			return Contains( value, current->leftChild);
 	}
-	
-
 	// Tree traversal / Printing
 	// =====================================================================================================================================
 	void PrintTree_PreOrder( BinaryNode< Comparable >* node ) const
@@ -345,14 +351,33 @@ class BinarySearchTree
 
 	void Rotate_LL( BinaryNode< Comparable >* &head ) const
 	{
+		// Create a copy of the adress of head. We will be changing head since it is a reference to a pointer and not a copy
 		auto headCopy = head;
-		auto left = head->leftChild;
 
-		head = left;					// Top of the rotation is now the left child of the previous node
-		head->rightChild = headCopy;	// The old top is now the left child of the new top node
+		// Set new head ( the left child of the old head )
+		head = head->leftChild;
 
-		headCopy->rightChild = nullptr;
-		headCopy->leftChild = nullptr;
+		// Set the left child of the moved node ( old head ) to the right child of the new head.
+		// The right child of the new head will be changed in the nect step
+		headCopy->leftChild = head->rightChild;
+
+		// Set the right child of the new head to the old head.
+		head->rightChild = headCopy;
+	}
+	void Rotate_RR( BinaryNode< Comparable >* &head ) const
+	{
+		// Create a copy of the adress of head. We will be changing head since it is a reference to a pointer and not a copy
+		auto headCopy = head;
+
+		// Set new head ( the right child of the old head )
+		head = head->rightChild;
+
+		// Set the right head of the old head to the left child of the old head. This will otherwise "get lost" in the next step
+		headCopy->rightChild = head->leftChild;
+
+		// The old head can now take it's place as the new left child of head
+		head->leftChild = headCopy;
+
 	}
 	void DeleteNode( BinaryNode< Comparable >* &node )
 	{
