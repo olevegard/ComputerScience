@@ -263,29 +263,25 @@ class BinarySearchTree
 		std::queue< BinaryNode< Comparable >* > nodes;
 		nodes.push ( node  );
 
-		int32_t nodeCount = 1;		// Next node to be processed this iteration
-		int32_t nextLevel = 2;		// What nodecCount must be in order to move down a level
-		int32_t nodesSkipped = 0;	// Number of empty nodes.
+		int32_t nodeCount = 0;		// Next node to be processed this iteration
+		int32_t nextLevel = 1;		// What nodecCount must be in order to move down a level
+		int32_t emptyNodesThisLevel = 0;
 
 		while ( !nodes.empty() )
 		{
-			int32_t nodesAdded = DoNextItem(  nodes );
-			int32_t skippedThisTime = ( 2 - nodesAdded );
-			nodesSkipped += skippedThisTime;
+			emptyNodesThisLevel += DoNextItem(  nodes );
 
 			++nodeCount;
 
 			if ( nodeCount == nextLevel )
 			{
-				nextLevel = nodeCount * 2;
+				if ( emptyNodesThisLevel == nextLevel )
+					break;
 
-				// Skipped nodes needs to be added just once per level
-				nodeCount += nodesSkipped;
+				nextLevel *= 2;
+				emptyNodesThisLevel = 0;
+				nodeCount = 0;
 
-				// k skipped nodes in level m
-				// Wil lead to k * 2 skipped nodes in level m + 1
-				// In other words : number of skipped nodes dobules for every level
-				nodesSkipped *= 2;
 				std::cout << std::endl;
 			}
 		}
@@ -296,10 +292,12 @@ class BinarySearchTree
 		BinaryNode< Comparable >* currentNode = nodes.front();
 		nodes.pop();
 
-		if ( currentNode == nullptr )
-			return 0;
+		//if ( currentNode == nullptr )return 0;
 
-		std::cout << currentNode->element;// << "\t";// << currentNode->height << ")   ";
+		if ( currentNode )
+			std::cout << currentNode->element << "\t";// << currentNode->height << ")   ";
+		else
+			std::cout << "-\t";
 
 		return AddChildrenToQueue( currentNode, nodes );
 	}
@@ -308,24 +306,47 @@ class BinarySearchTree
 	// Null pointers are not added
 	int32_t AddChildrenToQueue( BinaryNode< Comparable >* currentNode, std::queue< BinaryNode< Comparable >* >  &nodes ) const
 	{
-		int32_t nodesAdded = 0;
+		int32_t emptyNodes = 0;
+
+		//std::cout << "[";
+
+		if ( !currentNode )
+		{
+			//std::cout << " l " << "-" << " r " << "-";
+			nodes.push ( nullptr  );
+			nodes.push ( nullptr  );
+
+			emptyNodes = 1;
+			return emptyNodes;
+		}
 
 		if ( currentNode->leftChild != nullptr )
 		{
-			std::cout << " l " << currentNode->leftChild->element;
+			//std::cout << " l " << currentNode->leftChild->element;
 			nodes.push ( currentNode->leftChild  );
-			++nodesAdded;
+		}
+		else
+		{
+			//std::cout << " l " << "-";
+			nodes.push ( nullptr  );
+			//++emptyNodes;
 		}
 
 		if ( currentNode->rightChild != nullptr )
 		{
-			std::cout << " r " << currentNode->rightChild->element;
+			//std::cout << " r " << currentNode->rightChild->element;
 			nodes.push ( currentNode->rightChild  );
-			++nodesAdded;
+		}
+		else
+		{
+			//std::cout << " r " << "-";
+			nodes.push ( nullptr  );
+			//++emptyNodes;
 		}
 
-		std::cout << "\t";
-		return nodesAdded;
+		//std::cout << "]\t";
+		//emptyNodes = 0;
+		return emptyNodes;
 	}
 	// Manipulation
 	// =====================================================================================================================================
