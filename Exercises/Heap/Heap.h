@@ -48,22 +48,53 @@ class Heap
 	}
 	void Insert( Type value )
 	{
+		std::cout << "Inserting : " << value << std::endl;
 		elements.push_back( value );
 		PrelocateUp( elements.size() - 1 );
 	}
+	Type DeleteMax()
+	{
+		Type maxElement = elements[0];
+		std::swap( elements[ 0 ], elements[ elements.size() - 1 ] );
+		std::cout << "Back :" << elements.back( ) << std::endl;
+		elements.pop_back();
+		std::cout << "Back :" << elements.back( ) << std::endl;
+
+		for ( const auto &p : elements )
+			std::cout << p << ", ";
+		std::cout << "\nSize " << elements.size() << std::endl;
+		PrelocateDown( 0 );
+
+		return maxElement;
+	}
 	void PrelocateDown( int32_t index )
 	{
-		if ( index <= 0 || index >= ( elements.size() / 2) )
+		if ( index < 0 || index >=  elements.size() )
 			return;
 
 		IntPair children = ChildrenOf( index );
 
-		int32_t maxChild = ( elements[ children.first ] > elements[ children.second ] )? children.first : children.second;
+		int32_t maxChild = 0;
+
+		maxChild = ( elements[ children.first ] > elements[ children.second ] )? children.first : children.second;
+		std::cout << "Element " << index << std::endl;
+		std::cout << "\tChildren : " << children.first << ", " << children.second << std::endl;
+		std::cout << "\tComparing : " << maxChild << " and " << index  << std::endl;
+		std::cout << "\tComparing : " << elements[ maxChild ] << " and " << elements[ index ]  << std::endl;
+		std::cout << "\tSize " << elements.size() << std::endl;
+
+		if ( maxChild >= elements.size() )
+			maxChild = children.first;
 
 		if ( elements[ index ] < elements[maxChild] )
 		{
+			if ( maxChild < elements.size() )
+			{
+			std::cout << "\t\tSwapping\n";
 			std::swap( elements[index], elements[maxChild] );
+			Print();
 			PrelocateDown( maxChild );
+			}
 		}
 	}
 	void PrelocateUp( int32_t index )
@@ -73,6 +104,7 @@ class Heap
 
 		int32_t parent = ParentOf( index );
 
+		std::cout << "\tComparing : " << elements[ parent ] << " and " << elements[ index ]  << std::endl;
 		if ( elements[ index ] > elements[parent] )
 		{
 			std::swap( elements[index], elements[parent] );
