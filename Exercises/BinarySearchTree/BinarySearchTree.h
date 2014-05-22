@@ -110,14 +110,23 @@ class BinarySearchTree
 	}
 	void PrintTree() const
 	{
-		std::cout << "======================== Level-Order ========================\n";
 		PrintTree_LevelOrder( root );
-		std::cin.ignore();
-		/*
-		std::cout << "======================== In-Order ========================\n";
+
+		BreadthFirstSearch_Quick();
+
+		std::cout << "======================== In Order Traversal ========================\n";
 		PrintTree_InOrder( root );
-		*/
-		std::cin.ignore();
+
+		std::cout << "======================== Pre Order Traversal ========================\n";
+		PrintTree_PreOrder( root );
+
+
+		std::cout << "======================== Depth First ( reverse ) Traversal ========================\n";
+		PrintTree_DepthFirstSearch_Descending( root );
+
+		std::cout << "======================== Post Order Traversal ========================\n";
+		PrintTree_PostOrder( root );
+
 	}
 	void MakeEmpty()
 	{
@@ -148,9 +157,7 @@ class BinarySearchTree
 	{
 		BinaryNode< Comparable >* node = FindValue(  value );
 	}
-
 	private:
-	
 	BinaryNode<Comparable>* root;
 
 	// Find / Contains
@@ -239,27 +246,125 @@ class BinarySearchTree
 	}
 	// Tree traversal / Printing
 	// =====================================================================================================================================
-	void PrintTree_PreOrder( BinaryNode< Comparable >* node ) const
+	void PrintTree_InOrder( BinaryNode< Comparable >* head) const
 	{
-		if ( node == nullptr )
+		if ( head == nullptr )
 			return;
 
-		PrintTree_InOrder( node->leftChild );
-		std::cout << "\n" << node->element;
-		PrintTree_InOrder( node->rightChild );
+		PrintTree_InOrder( head->leftChild );
+		std::cout << head->element << std::endl;
+		PrintTree_InOrder( head->rightChild );
 	}
-	
-	void PrintTree_InOrder( BinaryNode< Comparable >* node ) const
+	// This is a DFS( Depth First Search )
+	void PrintTree_PreOrder( BinaryNode< Comparable >* head) const
 	{
-		if ( node == nullptr )
+		if ( head == nullptr )
 			return;
 
-		PrintTree_InOrder( node->leftChild );
-		std::cout << "\n" << node->element;
-		PrintTree_InOrder( node->rightChild );
+		std::cout << head->element << std::endl;
+		PrintTree_PreOrder( head->leftChild );
+		PrintTree_PreOrder( head->rightChild );
+	}
+	// This is also a DFS( Depth First Search )
+	// It starts in at the right child node, so it's not a preorder search
+	void PrintTree_DepthFirstSearch_Descending( BinaryNode< Comparable >* head) const
+	{
+		if ( head == nullptr )
+			return;
+
+		std::cout << head->element << std::endl;
+		PrintTree_DepthFirstSearch_Descending( head->rightChild );
+		PrintTree_DepthFirstSearch_Descending( head->leftChild );
+	}
+	void PrintTree_PostOrder( BinaryNode< Comparable >* head) const
+	{
+		if ( head == nullptr )
+			return;
+
+		PrintTree_PostOrder( head->leftChild );
+		PrintTree_PostOrder( head->rightChild );
+		std::cout << head->element << std::endl;
+	}
+	// Level Order Traversals
+	/*
+	 * A Breadth First Search is essensially the same as Level Order traversal
+	 * This implementation is a shortened version of the one lower down
+	 */
+	void BreadthFirstSearch()
+	{
+		std::cout << "======================== Breadth First Search ========================\n";
+		std::queue< BinaryNode< Comparable >* > nodes;
+		nodes.push( root );
+
+		int32_t proccessedNodes = 0;
+		int32_t nextLevel = 1;
+		int32_t emptyNodes = 0;
+
+		while ( !nodes.empty() )
+		{
+			auto current = nodes.front();
+			nodes.pop();
+
+			++proccessedNodes;
+
+			if ( current == nullptr )
+			{
+				nodes.push( nullptr );
+				nodes.push( nullptr );
+				++emptyNodes;
+				std::cout << "-\t";
+			}
+			else
+			{
+				nodes.push( current->leftChild );
+				nodes.push( current->rightChild );
+				std::cout << current->element << "\t";
+			}
+
+			if ( proccessedNodes == nextLevel )
+			{
+				std::cout << std::endl;
+				// Assuming the current level is filled, the amount of nodes in the last level will always be
+				// 	( The total amount of nodes so ) far / 2 + 1
+				// 	This is essensially the same as 2^x =  2^( x -1 ) + 2^( x - 2 ), ..., + 2^( x - n ) + 1, where x-n == 0
+				// 	In other words : 2^x is the sum of 2 to the power of all exponents added together + 1
+				// 		This is the same as the sum of the number of nodes in all levels of the tree above the lowest level
+				// 		So the number of nodes in the lowest level is double of the nodes in all prev levels + 1
+				// 		Reversing this we find that the number of the nodes in the last level is the total amount of nodes, divided by 2 minus one
+				if ( emptyNodes == ( ( nextLevel / 2 ) + 1 ) )
+					break;
+
+				// Se the above comment for this point
+				nextLevel = ( nextLevel * 2 ) + 1;
+
+				// Amount of empty nodes is for this level only
+				emptyNodes = 0;
+			}
+
+		}
+	}
+	void BreadthFirstSearch_Quick() const
+	{
+		std::cout << "======================== Breadth First Search ========================\n";
+		std::queue< BinaryNode< Comparable >* > nodes;
+		nodes.push( root );
+
+		while ( !nodes.empty() )
+		{
+			auto current = nodes.front();
+			nodes.pop();
+
+			if ( current != nullptr )
+			{
+				nodes.push( current->leftChild );
+				nodes.push( current->rightChild );
+				std::cout << current->element << "\n";
+			}
+		}
 	}
 	void PrintTree_LevelOrder( BinaryNode< Comparable >* node ) const
 	{
+		std::cout << "\n======================== Level-Order ========================\n";
 		std::queue< BinaryNode< Comparable >* > nodes;
 		nodes.push ( node  );
 
@@ -285,6 +390,7 @@ class BinarySearchTree
 				std::cout << std::endl;
 			}
 		}
+		std::cout << std::endl;
 	}
 	// Dequeue next item, add it's children and print.
 	int32_t DoNextItem( std::queue< BinaryNode< Comparable >* > &nodes ) const
