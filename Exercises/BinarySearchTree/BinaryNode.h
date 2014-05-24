@@ -39,15 +39,14 @@ class BinaryTreeTester
 	public:
 	BinaryTreeTester()
 	{
-		root = new BinaryTriNode( 20, nullptr, nullptr, nullptr );
-		Insert( 15 );
+		root = new BinaryTriNode( 50, nullptr, nullptr, nullptr );
 		Insert( 25 );
-		Insert( 35 );
-		Insert( 45 );
-		Insert( 40 );
-		Insert( 5 );
-		Insert( 43 );
-		Insert( 26 );
+		Insert( 12 );
+		Insert( 37 );
+		Insert( 6 );
+		Insert( 15 );
+		Insert( 3 );
+		Insert( 8 );
 
 		InOrder( root );
 
@@ -83,7 +82,15 @@ class BinaryTreeTester
 			node->rightChild->height = height;
 		}
 	}
-	void PostOrder( const BinaryTriNode* ndoe ) const
+	void Print()
+	{
+		BreadthFirstSearch( );
+		std::cout << "================================ Post Order Child Ptrs ================================\n";
+		PostOrder( root );
+		std::cout << "================================ Post Order Parent Ptr ================================\n";
+		PostOrder_ParentPtr( root );
+	}
+	void PostOrder( const BinaryTriNode* node ) const
 	{
 		if ( node == nullptr )
 			return;
