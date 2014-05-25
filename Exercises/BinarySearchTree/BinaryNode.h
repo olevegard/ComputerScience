@@ -42,14 +42,16 @@ class BinaryTreeTester
 		root = new BinaryTriNode( 50, nullptr, nullptr, nullptr );
 		Insert( 25 );
 		Insert( 12 );
+
 		Insert( 37 );
-		Insert( 6 );
-		Insert( 15 );
-		Insert( 3 );
-		Insert( 8 );
+		Insert( 33 );
+		Insert( 43 );
+
+		Insert( 80 );
+		Insert( 100 );
+		Insert( 90 );
 
 		InOrder( root );
-
 	}
 	void Insert( int32_t value )
 	{
