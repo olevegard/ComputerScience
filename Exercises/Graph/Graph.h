@@ -1,5 +1,7 @@
 #pragma once
 
+#include <map>
+
 class Graph_Matrix
 {
 	public:
@@ -72,57 +74,130 @@ struct Vertex
 		return false;
 	}
 	int32_t ID;
-	std::vector< int32_t > connectedVerticies;
+	std::vector< Edge > connectedVerticies;
 };
 class Graph_AdjList
 {
 	public:
 	Graph_AdjList()
 	{
+		AddVertex( 1 );
+		AddVertex( 2 );
+		AddVertex( 3 );
+		AddVertex( 4 );
+		AddVertex( 5 );
+		AddVertex( 6 );
+		AddVertex( 7 );
+
+		AddEdge( 1, 2, 2 );
+		AddEdge( 1, 4, 1 );
+
+		AddEdge( 2, 4, 3 );
+		AddEdge( 2, 5, 10 );
+
+		AddEdge( 3, 1, 4 );
+		AddEdge( 3, 6, 5 );
+
+		AddEdge( 4, 3, 2 );
+		AddEdge( 4, 5, 2 );
+		AddEdge( 4, 6, 8 );
+		AddEdge( 4, 7, 4 );
+
+		AddEdge( 5, 7, 6 );
+
+		AddEdge( 7, 6, 1 );
+
+		std::cout << "All vertices and edges added\n";
+
+		std::cout << std::boolalpha << IsConnected( 7, 6 ) << std::endl;
+		std::cout << std::boolalpha << IsConnected( 6, 7 ) << std::endl;
+		std::cout << std::boolalpha << IsConnected( 9, 6 ) << std::endl;
+
+		BFS();
+		DFS();
 	}
 	void AddVertex( int32_t vertex )
 	{
-		adjacencyList.emplace_back( Vertex( vertex ) );
+		adjacencyList.insert( std::pair< int32_t , Vertex > ( vertex, Vertex( vertex ) ) );
 	}
-
-	void AddEdge( int32_t vertex1, int32_t vertex2 )
+	void AddEdge( int32_t vertex1, int32_t vertex2, int32_t cost = 0 )
 	{
-		for ( auto &p : adjacencyList )
+		auto vertex = adjacencyList.find( vertex1 );
+
+		if ( vertex != std::end( adjacencyList ) )
+			vertex->second.AddEdge( vertex2, cost );
+	}
+	void BFS()
+	{
+		std::map< int32_t, Edge > path;
+		std::queue< Edge > toVisit;
+
+		toVisit.push( 1 );
+		path[1] = Edge( 1, 0 );
+		while ( !toVisit.empty() )
 		{
-			if ( p.ID == vertex1 )
+			Edge currentEdge = toVisit.front();
+			toVisit.pop();
+
+			const auto list = adjacencyList.at( currentEdge.ID ).connectedVerticies;
+			
+			for ( const Edge edge : list )
 			{
-				p.AddEdge( vertex2 );
-				return;
+				if ( path.count( edge.ID) == 0 )
+				{
+					path[ edge.ID ].ID = currentEdge.ID;
+					path[ edge.ID ].cost = ( edge.cost + currentEdge.cost );
+					toVisit.push( edge );
+				}
 			}
 		}
-		std::cout << "No edge added!\n";
-	}
 
+		for ( const auto &v : adjacencyList )
+			std::cout << "Path to " << v.second.ID << "\n\t" << path[v.second.ID].ID << " cost " << path[v.second.ID].cost << std::endl;
+	}
+	void DFS()
+	{
+		std::map< int32_t, Edge > path;
+		std::stack< Edge > toVisit;
+
+		toVisit.push( 1 );
+		path[1] = Edge( 1, 0 );
+		while ( !toVisit.empty() )
+		{
+			Edge currentEdge = toVisit.top();
+			toVisit.pop();
+
+			const auto list = adjacencyList.at( currentEdge.ID ).connectedVerticies;
+			
+			for ( const Edge edge : list )
+			{
+				if ( path.count( edge.ID) == 0 )
+				{
+					path[ edge.ID ].ID = currentEdge.ID;
+					path[ edge.ID ].cost = ( edge.cost + currentEdge.cost );
+					toVisit.push( edge );
+				}
+			}
+		}
+
+		for ( const auto &v : adjacencyList )
+			std::cout << "Path to " << v.second.ID << "\n\t" << path[v.second.ID].ID << " cost " << path[v.second.ID].cost << std::endl;
+	}
+	void ListConnectedVerteices( const Vertex &vertex  )
+	{
+		//for ( const int i : vertex.connectedVerticies )std::cout << i << std::endl;
+	}
 	bool IsConnected( int32_t vertex1, int32_t vertex2 )
 	{
-		for ( const auto &p : adjacencyList )
-		{
-			if ( p.ID == vertex1 )
-			{
-				if ( p.IsConnected( vertex2 ) )
-				{
-					std::cout << vertex1 << " is connected to " << vertex2 << std::endl;
-					return true;
-				}
-				else
-				{
-					std::cout << vertex1 << " but isn't connected to " << vertex2 << std::endl;
-					return false;
-				}
+		std::cout << "Is " << vertex1 << " connected to " << vertex2 << "? ";
+		auto vertex = adjacencyList.find( vertex1 );
 
-			}
-		}
-
-		std::cout << vertex1 << " doesnt exist" << std::endl;
-
-		return false;
+		if ( vertex != std::end( adjacencyList ) )
+			return vertex->second.IsConnected( vertex2 );
+		else
+			return false;
 	}
 
-	std::vector< Vertex > adjacencyList;
-};
 
+	std::map< int32_t, Vertex > adjacencyList;
+};
