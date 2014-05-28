@@ -8,9 +8,7 @@ class Graph_Matrix
 		for ( int i = 0 ; i < 5 ; ++i )
 		{
 			for ( int j = 0 ; j < 5 ; ++j )
-			{
 				matrix[i][j] = false;
-			}
 		}
 	}
 	void InsertEdge( int first, int second )
@@ -27,16 +25,41 @@ class Graph_Matrix
 
 	bool matrix[5][5];
 };
+struct Edge
+{
+	Edge( int32_t id_, int32_t cost_ )
+	:	ID( id_ )
+	,	cost( cost_ )
+	{
+	}
+	Edge( int32_t id_ )
+	:	Edge( id_, 0 )
+	{
+	}
+	Edge( )
+	:	Edge( 0, 0 )
+	{
+	}
+	void operator=( const int &otherID )
+	{
+		ID = otherID;
+	}
+	int32_t ID;
+	int32_t cost;
+};
+inline bool operator==( const Edge &lhs, const int32_t &rhs)
+{
+	return ( lhs.ID == rhs );
+}
 struct Vertex
 {
 	Vertex( int32_t id_ )
 	:	ID( id_ )
 	{
 	}
-
-	void AddEdge( int32_t vertex )
+	void AddEdge( int32_t vertex, int32_t cost )
 	{
-		connectedVerticies.push_back( vertex );
+		connectedVerticies.push_back( Edge( vertex, cost ) );
 	}
 	bool IsConnected ( int32_t vertex ) const
 	{
