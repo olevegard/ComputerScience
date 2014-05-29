@@ -139,19 +139,17 @@ class Graph_AdjList
 	}
 	void BFS()
 	{
-		std::map< int32_t, Edge > path;
-		std::queue< Edge > toVisit;
+		std::map< int32_t, Edge > path{ { 1, 0 } };
+		std::queue< Edge > toVisit( { 1 } );
 
-		toVisit.push( 1 );
-		path[1] = Edge( 1, 0 );
 		while ( !toVisit.empty() )
 		{
 			Edge currentEdge = toVisit.front();
 			toVisit.pop();
 
-			const auto list = adjacencyList.at( currentEdge.ID ).connectedVerticies;
+			const auto edgesFromCurrentVertex = adjacencyList.at( currentEdge.ID ).connectedVerticies;
 			
-			for ( const Edge edge : list )
+			for ( const Edge edge : edgesFromCurrentVertex )
 			{
 				if ( path.count( edge.ID) == 0 )
 				{
@@ -167,61 +165,52 @@ class Graph_AdjList
 	}
 	void Dijkstra()
 	{
-		std::map< int32_t, Edge > path;
-		std::queue< Edge > toVisit;
-
-		toVisit.push( 1 );
-		path[1] = Edge( 1, 0 );
+		std::map< int32_t, Edge > path{ { 1, 0 } };
+		std::queue< Edge > toVisit( { 1 } );
 
 		while ( !toVisit.empty() )
 		{
 			Edge currentEdge = toVisit.front();
-			int32_t currentCost = path[ currentEdge.ID ].cost;
 			toVisit.pop();
+			int32_t currentCost = path[ currentEdge.ID ].cost;
 
 			const auto list = adjacencyList.at( currentEdge.ID ).connectedVerticies;
 			
 			if ( list.size() == 0 )
-				continue
+				continue;
 
 			std::priority_queue< Edge > edgeHeap;
 			for ( const Edge edge : list )
 				edgeHeap.push( edge );
 
-			Edge edge = edgeHeap.top();
-
-			while( !edgeHeap.empty() )
+			while ( !edgeHeap.empty() )
 			{
-				if ( ( path.count( edge.ID) == 0 ) || ( path[ edge.ID ].cost > ( edge.cost + currentCost ) ) )
+				Edge edge = edgeHeap.top();
+
+				edgeHeap.pop();
+
+				// If path is new or has better cost that previous path
+				if ( ( path.count( edge.ID ) == 0 ) || ( path[ edge.ID ].cost > ( edge.cost + currentCost ) ) )
 				{
 					path[ edge.ID ].ID = currentEdge.ID;
 					path[ edge.ID ].cost = ( edge.cost + currentCost );
 
 					toVisit.push( edge );
 				}
-
-				edgeHeap.pop();
-
-				if ( edgeHeap.size() > 0 )
-					edge = edgeHeap.top();
 			}
 		}
 
 		for ( const auto &v : adjacencyList )
 			std::cout << "Path to " << v.second.ID << " : " << path[v.second.ID].ID << " cost " << path[v.second.ID].cost << std::endl;
-
-		//for ( const auto &v : adjacencyList ) std::cout << "Path to " << v.second.ID << " : " << path[v.second.ID].ID << " cost " << path[v.second.ID].cost << std::endl;
 	}
 	void DFS()
 	{
-		std::map< int32_t, Edge > path;
-		std::stack< Edge > toVisit;
+		std::map< int32_t, Edge > path{ { 1, 0 } };
+		std::queue< Edge > toVisit( { 1 } );
 
-		toVisit.push( 1 );
-		path[1] = Edge( 1, 0 );
 		while ( !toVisit.empty() )
 		{
-			Edge currentEdge = toVisit.top();
+			Edge currentEdge = toVisit.front();
 			toVisit.pop();
 
 			const auto list = adjacencyList.at( currentEdge.ID ).connectedVerticies;
@@ -255,7 +244,6 @@ class Graph_AdjList
 		else
 			return false;
 	}
-
 
 	std::map< int32_t, Vertex > adjacencyList;
 };
