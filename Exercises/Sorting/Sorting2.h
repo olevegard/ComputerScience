@@ -4,18 +4,20 @@ class Sorting2
 {
 	public:
 	Sorting2()
-		:	elementCount( 9 )
+		:	elementCount( 100 )
 		,	data( elementCount, 0 )
 	{
-		std::generate_n( std::begin( data ), elementCount, [](){ return rand() % 15; } );
+		std::generate_n( std::begin( data ), elementCount, [](){ return rand() % 1000; } );
 
-		//InsertionSort( );
+		std::cout << "======================================================== Insertion Sort ========================================================\n";
+		InsertionSort( );
+
+		std::cout << "======================================================== Shell Sort ========================================================\n";
 		ShellSort();
 	}
 	void InsertionSort( )
 	{
 		std::vector< int32_t > numbers( data );
-		std::cout << "======================================================== Insertion Sort ========================================================\n";
 
 		// Make sur element 0 -> firstUnsorted is sorted
 		for ( auto firstUnsorted = 1 ; firstUnsorted < numbers.size() ; ++firstUnsorted )
@@ -38,60 +40,57 @@ class Sorting2
 				numbers.erase( std::begin( numbers ) + firstUnsorted + 1 );
 			}
 		}
+
+		std::cout << "Sorted? " << std::boolalpha << std::is_sorted( numbers.begin(), numbers.end() ) << std::endl;
 	}
+	// Sort all itesms with an index of a given intrval. When all itms with this interval is in sorted order, do a new, lowr interval
+	// Example : 81, 94, 11, 96, 12, 35, 17, 95, 28, 58, 41, 75, 15
+	// Interval 5
+	// 		Sort all items with 5 interval starting at 0 to 4
+	// 			0	: 81, 35, 41	= 35, 41, 81
+	// 			1	: 94, 17, 75	= 17, 75, 94
+	// 			2	: 11, 95, 15	= 11, 15, 95
+	// 			3	: 96, 28		= 28, 96
+	// 			4	: 12, 58		= 12, 58
+	// 		Sort all items with 3 as an intervall
+	// 			.......
+	// 		Continu until you rach 1 as an interval
 	void ShellSort()
 	{
 		std::vector< int32_t > numbers( data );
-		//std::vector< int32_t > numbers( { 81, 94, 11, 96, 12, 35, 17, 95, 28, 58, 41, 75, 15 });
-		std::queue< int32_t > increments = CreateIncrementsQueue( numbers.size() );
-		std::cout << "======================================================== Shell Sort ========================================================\n";
+		std::stack< int32_t > increments = CreateIncrementsStack( numbers.size() );
 
-		int32_t first = 0;
-		int32_t interval = increments.front();
-		increments.pop();
+		int32_t first = 1;
 
-		while ( interval > 0 )
+		// For each iteration, do SortElementsWithInterval() for all values of first below the interval
+		while ( !increments.empty() )
 		{
-			SortElementsWithInterval( numbers, first, interval );
+			SortElementsWithInterval( numbers, first, increments.top() );
 			first++;
 
-			if ( first == interval )
+			if ( first == increments.top() )
 			{
-				interval = increments.front();
 				increments.pop();
 				first = 0;
 			}
 		}
-
-		for ( int32_t first = 0; first < numbers.size() ; ++first  )
-		{
-			std::cout << first << ". " << numbers[first] << "\n";
-		}
+		std::cout << "Sorted? " << std::boolalpha << std::is_sorted( numbers.begin(), numbers.end() ) << std::endl;
 	}
-	std::queue< int32_t > CreateIncrementsQueue( int32_t sizeOfInput )
+	private:
+	std::stack< int32_t > CreateIncrementsStack( int32_t sizeOfInput )
 	{
 		int32_t halfSize = sizeOfInput * 0.5;
-		int32_t increment = 1;
-		std::queue< int32_t > increments;
+		std::stack< int32_t > increments;
 
-		for ( int32_t first = 0; first < halfSize ; ++first  )
+		for ( int32_t increment = 2; ( increment - 1 ) <= ( halfSize ); increment *= 2 )
 		{
-			if ( increment < ( halfSize ) )
-			{
-				increments.push( increment );
-				increment *= 2;
-			}
-			else
-				break;
+			increments.push( ( increment - 1 ) );
 		}
 
 		return increments;
 	}
-
-
 	void SortElementsWithInterval( std::vector< int32_t > &numbers, int32_t start, int32_t interval )
 	{
-		std::cout << "Sort elements from " << start << " interval : " << interval << std::endl;
 		bool swap = true;
 
 		while ( swap )
@@ -102,11 +101,9 @@ class Sorting2
 
 			while ( second < numbers.size() )
 			{
-				//std::cout << "\tChecking : " << numbers[first] << " and " << numbers[second] << std::endl;
 				if ( numbers[first] > numbers[second] )
 				{
 					std::swap( numbers[first], numbers[second] );
-					//std::cout << "\tSwapped : " << numbers[first] << " and " << numbers[second] << std::endl;
 					swap = true;
 				}
 
@@ -115,7 +112,7 @@ class Sorting2
 			}
 		}
 	}
-
 	int32_t elementCount;
 	std::vector< int32_t > data;
+	std::vector< std::vector< int32_t > > sortedArrays;
 };
