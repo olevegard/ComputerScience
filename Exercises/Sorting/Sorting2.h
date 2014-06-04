@@ -14,6 +14,9 @@ class Sorting2
 
 		std::cout << "======================================================== Shell Sort ========================================================\n";
 		ShellSort();
+
+		std::cout << "======================================================== Merge Sort ========================================================\n";
+		MergeSort();
 	}
 	void InsertionSort( )
 	{
@@ -76,7 +79,60 @@ class Sorting2
 		}
 		std::cout << "Sorted? " << std::boolalpha << std::is_sorted( numbers.begin(), numbers.end() ) << std::endl;
 	}
+	void MergeSort()
+	{
+		std::vector< int32_t > list1( elementCount );
+		std::vector< int32_t > list2( elementCount );
+
+		std::generate_n( std::begin( list1 ), elementCount, [](){ return rand() % 1000; } );
+		std::generate_n( std::begin( list2 ), elementCount, [](){ return rand() % 1000; } );
+
+		std::sort( std::begin( list1 ), std::end( list1 ) );
+		std::sort( std::begin( list2 ), std::end( list2 ) );
+
+		MergeLists( list1, list2 );
+	}
 	private:
+	void MergeLists( std::vector< int32_t > list1, std::vector< int32_t > list2 )
+	{
+		std::vector< int32_t > mergedList;
+		mergedList.reserve( elementCount * 2 );
+
+		while ( !list1.empty() || !list2.empty() )
+		{
+			if ( list1.empty() )
+			{
+				mergedList.push_back( list2[0] );
+				list2.erase( std::begin( list2 ) );
+				continue;
+			}
+
+			if ( list2.empty() )
+			{
+				mergedList.push_back( list1[0] );
+				list1.erase( std::begin( list1 ) );
+				continue;
+			}
+
+			if ( list1[0] < list2[0] )
+			{
+				mergedList.push_back( list1[0] );
+				list1.erase( std::begin( list1 ) );
+			}
+			else
+			{
+				mergedList.push_back( list2[0] );
+				list2.erase( std::begin( list2 ) );
+			}
+		}
+
+		std::cout << "Merged list\n";
+		for ( const auto &p : mergedList )
+			std::cout << p << ", ";
+		std::cout << std::endl;
+
+		std::cout << "Merged list size " << mergedList.size() << " list 1 size " << list1.size() << " list 2 size " << list2.size() << std::endl;
+	}
 	std::stack< int32_t > CreateIncrementsStack( int32_t sizeOfInput )
 	{
 		int32_t halfSize = sizeOfInput * 0.5;
