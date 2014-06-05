@@ -58,6 +58,7 @@ class Sorting2
 	// 		Sort all items with 3 as an intervall
 	// 			.......
 	// 		Continu until you rach 1 as an interval
+	
 	void ShellSort()
 	{
 		std::vector< int32_t > numbers( data );
@@ -81,22 +82,48 @@ class Sorting2
 	}
 	void MergeSort()
 	{
-		std::vector< int32_t > list1( elementCount );
-		std::vector< int32_t > list2( elementCount );
+		std::vector< int32_t > allElements( 10  );
+		std::vector< int32_t > list1;
+		std::vector< int32_t > list2;
 
-		std::generate_n( std::begin( list1 ), elementCount, [](){ return rand() % 1000; } );
-		std::generate_n( std::begin( list2 ), elementCount, [](){ return rand() % 1000; } );
+		std::generate_n( std::begin( allElements ), 10, [](){ return rand() % 1000; } );
 
-		std::sort( std::begin( list1 ), std::end( list1 ) );
-		std::sort( std::begin( list2 ), std::end( list2 ) );
+		SplitListInHalf( allElements, list1, list2 );
 
-		MergeLists( list1, list2 );
+		std::cout << "==================================== Original List==================================\n";
+		for ( const auto &p : allElements )
+			std::cout << p << std::endl;
+
+		std::cout << "==================================== List 1 ==================================\n";
+		for ( const auto &p : list1 )
+			std::cout << p << std::endl;
+
+		std::cout << "==================================== List 1 ==================================\n";
+		for ( const auto &p : list2 )
+			std::cout << p << std::endl;
+
+		//MergeLists( list1, list2 );
 	}
 	private:
-	void MergeLists( std::vector< int32_t > list1, std::vector< int32_t > list2 )
+	void SplitListInHalf( std::vector< int32_t > &input, std::vector< int32_t > &list1, std::vector< int32_t > &list2 )
+	{
+		std::move(
+			input.begin(),
+			input.begin() + input.size() / 2,
+			std::back_inserter ( list1 )
+		);
+
+		std::move(
+			input.begin() + input.size() / 2,
+			input.end(),
+			std::back_inserter ( list2 )
+		);
+	}
+	std::vector< int32_t > MergeLists( std::vector< int32_t > list1, std::vector< int32_t > list2 )
 	{
 		std::vector< int32_t > mergedList;
-		mergedList.reserve( elementCount * 2 );
+		//mergedList.reserve( elementCount * 2 );
+		mergedList.reserve( 2 );
 
 		while ( !list1.empty() || !list2.empty() )
 		{
@@ -132,6 +159,8 @@ class Sorting2
 		std::cout << std::endl;
 
 		std::cout << "Merged list size " << mergedList.size() << " list 1 size " << list1.size() << " list 2 size " << list2.size() << std::endl;
+
+		return mergedList;
 	}
 	std::stack< int32_t > CreateIncrementsStack( int32_t sizeOfInput )
 	{
