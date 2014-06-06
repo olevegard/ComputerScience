@@ -1,6 +1,8 @@
 #pragma once
 
 #include <map>
+#include <algorithm>
+
 #include "../Heap/Heap.h"
 
 class Graph_Matrix
@@ -228,6 +230,34 @@ class Graph_AdjList
 
 		for ( const auto &v : adjacencyList )
 			std::cout << "Path to " << v.second.ID << " : " << path[v.second.ID].ID << " cost " << path[v.second.ID].cost << std::endl;
+	}
+	void BestFirstSeach()
+	{
+		int32_t start = 1;
+		int32_t goal = 7;
+
+		std::priority_queue< Edge > open;//( { Edge( start ) } );
+		std::map< int32_t, Edge > openMap{ { 1, 0 } };
+		open.push( Edge( start ) );
+
+		std::priority_queue< Edge > closed;
+		std::map< int32_t, Edge > closedMap{  };
+
+		while ( !open.empty() )
+		{
+			Edge edge = open.top();
+			open.pop();
+			closed.push( edge );
+
+			const auto list = adjacencyList.at( edge.ID ).connectedVerticies;
+			
+			for ( const Edge edge : list )
+			{
+				if ( openMap.count( edge.ID ) == 0 &&  closedMap.count( edge.ID ) == 0 )
+				{
+				}
+			}
+		}
 	}
 	void ListConnectedVerteices( const Vertex &vertex  )
 	{

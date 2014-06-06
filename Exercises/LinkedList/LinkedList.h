@@ -61,11 +61,11 @@ class List
 		{
 			return *tail->prev;
 		}
-		Iterator<Object> Begin()
+		Iterator<Object> Begin() const
 		{
 			return Iterator< Object > ( head->next );
 		}
-		Iterator< Object > End()
+		Iterator< Object > End() const
 		{
 			return Iterator< Object >( tail );
 		}
@@ -78,7 +78,7 @@ class List
 		}
 		Iterator<Object> PushBack( const Object &obj )
 		{
-			std::cout << "PushBack " << obj << std::endl;
+			//std::cout << "PushBack " << obj << std::endl;
 			return Insert( End(), obj );
 		}
 		Iterator<Object> PopBack( )
@@ -94,10 +94,13 @@ class List
 
 		// Insert / Erase
 		// ======================================================
+
+		// Insert obj after iterator
 		Iterator<Object> Insert( Iterator< Object > iterator, const Object &obj )
 		{
-			std::cout << "\tInserting " << obj << std::endl;
+			//std::cout << "\tInserting " << obj << std::endl;
 			auto node = iterator.GetNode();
+
 			Node< Object >* prevNode = node->prev;
 			Node< Object >* newNode = new Node< Object >( obj, prevNode, node ); 
 

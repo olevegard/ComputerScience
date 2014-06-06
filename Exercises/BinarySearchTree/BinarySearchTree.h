@@ -1,3 +1,8 @@
+// Binary Search Tree - Ole Vegard Mythe Moland
+//
+// Note : this class is not intended as an efficient implementatoin of an AVL tree. 
+// 	Though the ideal is to use efficent solutions to problems, the main priority is to learn about AVL trees
+// 	Likewise the comments are also used mostly for educational purposes
 #pragma once
 
 #include <queue>
@@ -12,84 +17,17 @@ class BinarySearchTree
 	public:
 	BinarySearchTree()
 	{
-		root = new BinaryNode< Comparable >( 50, nullptr, nullptr );
+		root = new BinaryNode< Comparable >( 20, nullptr, nullptr );
 		root->height = 0;
 
-/*
-		root->rightChild = new BinaryNode< Comparable >( 100, nullptr, nullptr );
-		root->rightChild->leftChild = new BinaryNode< Comparable >( 75, nullptr, nullptr ); 
-		root->rightChild->leftChild->leftChild  = new BinaryNode< Comparable >( 60, nullptr, nullptr ); 
-		*/
-		Insert( 60 );
-		Insert( 70 );
-		Insert( 65 );
-		Insert( 90 );
-
-		Insert( 40 );
-		Insert( 30 );
-		Insert( 35 );
 		Insert( 10 );
-
-		PrintTree();
-		Rotate_RR( root->rightChild );
-		PrintTree();
-		//Rotate_LL( root->leftChild );
-		PrintTree();
-/*
-		Insert( 25 );
-		Insert( 75 );
-
-		Insert( 12 );
-		Insert( 37 );
-		Insert( 67 );
-		Insert( 87 );
-
-		Insert( 12 );
-		Insert( 37 );
-		Insert( 67 )
-		Insert( 87 );
-
-		Insert( 6 );
+		Insert( 5 );
 		Insert( 15 );
-		Insert( 30 );
-		Insert( 47 );
-		Insert( 55 );
-		Insert( 70 );
-		//Insert( 80 );
-		Insert( 105 );
-
-
-		Insert( 4 );
-		Insert( 8 );
 		Insert( 14 );
 		Insert( 18 );
-		Insert( 28 );
+		Insert( 25 );
 		Insert( 35 );
-		Insert( 45 );
-		Insert( 48 );
-		Insert( 52 );
-		Insert( 60 );
-		Insert( 68 );
-		Insert( 72 );
-		//Insert( 78 );
-		//Insert( 85 );
-		Insert( 110 );
-		Insert( 100 );
-
-		Insert( 2 );
-
-		Insert( 1 );
-
-		Insert( 105 );
-		*/
-
-		std::cout << "Max element is : " << FindMax() << std::endl;
-		std::cout << "Max element is : " << FindMax( root )->element << std::endl;
-
-
-		std::cout << "Min element is : " << FindMin() << std::endl;
-		std::cout << "Min element is : " << FindMin( root )->element << std::endl;
-		std::cin.ignore();
+		Insert( 30 );
 	}
 	const BinarySearchTree& operator=( const BinarySearchTree &rhs );
 
@@ -120,13 +58,11 @@ class BinarySearchTree
 		std::cout << "======================== Pre Order Traversal ========================\n";
 		PrintTree_PreOrder( root );
 
-
 		std::cout << "======================== Depth First ( reverse ) Traversal ========================\n";
 		PrintTree_DepthFirstSearch_Descending( root );
 
 		std::cout << "======================== Post Order Traversal ========================\n";
 		PrintTree_PostOrder( root );
-
 	}
 	void MakeEmpty()
 	{
@@ -345,7 +281,7 @@ class BinarySearchTree
 	}
 	void BreadthFirstSearch_Quick() const
 	{
-		std::cout << "======================== Breadth First Search ========================\n";
+		std::cout << "======================== Breadth First Search ( Level-Order ) ========================\n";
 		std::queue< BinaryNode< Comparable >* > nodes;
 		nodes.push( root );
 
