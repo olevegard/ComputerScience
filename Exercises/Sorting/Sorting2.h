@@ -86,7 +86,7 @@ class Sorting2
 	}
 	void MergeSort()
 	{
-		int32_t numElements = 8;
+		int32_t numElements = 16;
 
 		std::deque< int32_t > allElements( numElements  );
 		std::generate_n( std::begin( allElements ), numElements, [](){ return rand() % 1000; } );
@@ -95,15 +95,29 @@ class Sorting2
 
 		std::deque< VecPair > result;
 
-		for ( int32_t i = 0 ; ( i ) < allElements.size() ; i += 2 )
+		int32_t seriesLength = 2;
+		for ( int32_t i = 0 ; ( i ) < allElements.size() ; ++i )//i += 3 )
 		{
 			VecPair pair;
 
 			//std::copy( allElements.begin() + 0, allElements.begin() + 1 + i, std::back_inserter( pair.first ) );
 			//std::copy( allElements.begin() + 1 + i, allElements.begin() + 2 + i * 2, std::back_inserter( pair.second ) );
+			int32_t seriesStart = i * ( seriesLength * 2 );
+			std::cout << "Series start " << seriesStart << std::endl;
 
-			std::copy( allElements.begin() + 0 + i, allElements.begin() + 1 + i, std::back_inserter( pair.first ) );
-			std::copy( allElements.begin() + 1 + i, allElements.begin() + 2 + i, std::back_inserter( pair.second ) );
+			if ( ( seriesStart + ( seriesLength* 2 ) ) > allElements.size()  )
+				break;
+
+			std::copy(
+				allElements.begin() + 0 + seriesStart,
+				allElements.begin() + seriesStart + seriesLength,
+				std::back_inserter( pair.first )
+			);
+			std::copy(
+				allElements.begin() + seriesStart + seriesLength,
+				allElements.begin() + seriesStart + ( seriesLength * 2 ),
+				std::back_inserter( pair.second )
+			);
 
 			//allElements.pop_front(); allElements.pop_front();
 
@@ -128,6 +142,7 @@ class Sorting2
 		}
 
 
+		/*
 		for ( const auto &pair : result )
 		{
 			auto merged = MergeLists( pair.first, pair.second );
@@ -142,7 +157,6 @@ class Sorting2
 
 
 
-		/*
 		std::cout << "==================================== Original List==================================\n";
 		for ( const auto &p : allElements )
 			std::cout << p << std::endl;
