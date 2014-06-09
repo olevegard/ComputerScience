@@ -84,6 +84,16 @@ class Sorting2
 		}
 		std::cout << "Sorted? " << std::boolalpha << std::is_sorted( numbers.begin(), numbers.end() ) << std::endl;
 	}
+	// 1. Move all elements into list
+	// 2. Merge all the list so that the resulting list is sorted
+	// 3. Take the resulting lists and merge them together
+	// 4. Repeat step 3
+	//
+	//	The size of the lists will be 1 in the first pass ( since all elements are unsorted )
+	//	The secon time the lists of size one will habe been merged int lists of size two
+	//	The third time the lists will be of size 4, then 8, then 16, etx...
+	//
+	// 	Mergin two list will run in O( n ) time since the lists are sorted
 	void MergeSort()
 	{
 		int32_t numElements = 16;
@@ -95,7 +105,7 @@ class Sorting2
 
 		std::deque< VecPair > result;
 
-		int32_t seriesLength = 2;
+		int32_t seriesLength = 4;
 		for ( int32_t i = 0 ; ( i ) < allElements.size() ; ++i )//i += 3 )
 		{
 			VecPair pair;
@@ -109,7 +119,7 @@ class Sorting2
 				break;
 
 			std::copy(
-				allElements.begin() + 0 + seriesStart,
+				allElements.begin() + seriesStart,
 				allElements.begin() + seriesStart + seriesLength,
 				std::back_inserter( pair.first )
 			);
