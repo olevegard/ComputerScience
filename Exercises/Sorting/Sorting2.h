@@ -100,42 +100,61 @@ class Sorting2
 
 		std::deque< int32_t > allElements( numElements  );
 		std::generate_n( std::begin( allElements ), numElements, [](){ return rand() % 1000; } );
+		std::deque< VecPair > result;
 
 		for ( const auto &p : allElements ) std::cout << p << std::endl;
 
-		std::deque< VecPair > result;
-
-		int32_t seriesLength = 4;
-		for ( int32_t i = 0 ; ( i ) < allElements.size() ; ++i )//i += 3 )
+		// Pass 1
+		// Split into pairs
+		int32_t seriesLength = 1;
+		for ( int32_t i = 0 ; ( i ) < allElements.size() ; ++i )
 		{
 			VecPair pair;
 
-			//std::copy( allElements.begin() + 0, allElements.begin() + 1 + i, std::back_inserter( pair.first ) );
-			//std::copy( allElements.begin() + 1 + i, allElements.begin() + 2 + i * 2, std::back_inserter( pair.second ) );
 			int32_t seriesStart = i * ( seriesLength * 2 );
-			std::cout << "Series start " << seriesStart << std::endl;
+			if ( ( seriesStart + ( seriesLength* 2 ) ) > allElements.size()  )
+				break;
+
+			std::copy( allElements.begin() + seriesStart               , allElements.begin() + seriesStart + seriesLength        , std::back_inserter( pair.first ) );
+			std::copy( allElements.begin() + seriesStart + seriesLength, allElements.begin() + seriesStart + ( seriesLength * 2 ), std::back_inserter( pair.second ) );
+
+			result.push_back( pair );
+		}
+
+		// Merge and add pairs to allElements
+		AddPairsToVector( result, allElements );
+
+		// Pass 2
+		// Split into pairs
+		seriesLength = 2;
+		result.clear();
+		for ( int32_t i = 0 ; ( i ) < allElements.size() ; ++i )
+		{
+			VecPair pair;
+
+			int32_t seriesStart = i * ( seriesLength * 2 );
 
 			if ( ( seriesStart + ( seriesLength* 2 ) ) > allElements.size()  )
 				break;
 
-			std::copy(
-				allElements.begin() + seriesStart,
-				allElements.begin() + seriesStart + seriesLength,
-				std::back_inserter( pair.first )
-			);
-			std::copy(
-				allElements.begin() + seriesStart + seriesLength,
-				allElements.begin() + seriesStart + ( seriesLength * 2 ),
-				std::back_inserter( pair.second )
-			);
-
-			//allElements.pop_front(); allElements.pop_front();
+			std::copy( allElements.begin() + seriesStart               , allElements.begin() + seriesStart + seriesLength        , std::back_inserter( pair.first ) );
+			std::copy( allElements.begin() + seriesStart + seriesLength, allElements.begin() + seriesStart + ( seriesLength * 2 ), std::back_inserter( pair.second ) );
 
 			result.push_back( pair );
 		}
-	
+		PrintPairs( result );
 
-		std::cout << "==================================== Original List==================================\n";
+		// Merge and add pairs to allElements
+		AddPairsToVector( result, allElements );
+
+		for ( const auto &i : allElements)
+			std::cout << i << std::endl;
+	}
+	private:
+	void PrintPairs( const std::deque< VecPair > &result )
+	{
+		std::cout << "=================================== Sorted Pairs ===================================\n";
+
 		for ( const auto &pair : result )
 		{
 			std::cout << "\tList first\n\t\t";
@@ -150,45 +169,19 @@ class Sorting2
 
 			std::cout << "====================================================================================\n";
 		}
-
-
-		/*
-		for ( const auto &pair : result )
-		{
-			auto merged = MergeLists( pair.first, pair.second );
-
-			for ( const auto &i : merged )
-				std::cout << i << std::endl;
-
-			std::cout << std::endl;
-			result.pop_front();
-			result.push_front( merged );
-		}
-
-
-
-		std::cout << "==================================== Original List==================================\n";
-		for ( const auto &p : allElements )
-			std::cout << p << std::endl;
-
-		auto merged = MergeLists( pairList.first, pairList.second );
-
-		std::cout << "==================================== Merged List==================================\n";
-		for ( const auto &p : merged )
-			std::cout << p << std::endl;
-
-		std::cout << "==================================== List 1 ==================================\n";
-		for ( const auto &p : pairList.first)
-			std::cout << p << std::endl;
-
-		std::cout << "==================================== List 2 ==================================\n";
-		for ( const auto &p : pairList.second )
-			std::cout << p << std::endl;
-
-		//MergeLists( list1, list2 );
-		*/
 	}
-	private:
+	void AddPairsToVector( const std::deque< VecPair > &result, std::deque< int32_t > &allElements )
+	{
+		allElements.clear();
+
+		for ( const auto &pair : result )
+			AddToVector( MergeLists( pair.first, pair.second ), allElements );
+	}
+	void AddToVector( const std::vector< int32_t > &input, std::deque< int32_t > &output )
+	{
+		for ( const auto &i : input )
+			output.push_back( i );
+	}
 	VecPair SplitListInHalf( std::vector< int32_t > &input )
 	{
 		VecPair output;
