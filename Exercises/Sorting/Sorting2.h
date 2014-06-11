@@ -1,3 +1,7 @@
+// Sorting - Ole Vegard Mythe Moland
+// A class to show off a few sorting algorithms
+// Note : These implementations are designed to be intuitive rather than optimized!
+
 #pragma once
 
 #include <deque>
@@ -96,7 +100,7 @@ class Sorting2
 	// 	Mergin two list will run in O( n ) time since the lists are sorted
 	void MergeSort()
 	{
-		int32_t numElements = 16;
+		int32_t numElements = 32;
 
 		std::deque< int32_t > allElements( numElements  );
 		std::generate_n( std::begin( allElements ), numElements, [](){ return rand() % 1000; } );
@@ -104,51 +108,51 @@ class Sorting2
 
 		for ( const auto &p : allElements ) std::cout << p << std::endl;
 
-		// Pass 1
-		// Split into pairs
 		int32_t seriesLength = 1;
-		for ( int32_t i = 0 ; ( i ) < allElements.size() ; ++i )
+		while ( seriesLength < numElements )
 		{
-			VecPair pair;
+			for ( int32_t i = 0 ;( i * seriesLength * 2 ) < allElements.size(); ++i )
+			{
+				int32_t seriesStart = i * ( seriesLength * 2 );
 
-			int32_t seriesStart = i * ( seriesLength * 2 );
-			if ( ( seriesStart + ( seriesLength* 2 ) ) > allElements.size()  )
-				break;
+				VecPair pair;
 
-			std::copy( allElements.begin() + seriesStart               , allElements.begin() + seriesStart + seriesLength        , std::back_inserter( pair.first ) );
-			std::copy( allElements.begin() + seriesStart + seriesLength, allElements.begin() + seriesStart + ( seriesLength * 2 ), std::back_inserter( pair.second ) );
+				if ( seriesStart + seriesLength >= allElements.size()  )
+				{
+					std::cout << "Could not copy full length for first pair, skipping\n";
+					std::cout << "Series start " << seriesStart << std::endl;
+					std::cout << "Series end " << seriesStart + seriesLength  << " size of list is " << allElements.size() << std::endl;
 
-			result.push_back( pair );
+					std::copy( allElements.begin() + seriesStart               , allElements.begin() + seriesStart + seriesLength        , std::back_inserter( pair.first ) );
+					result.push_back( pair );
+
+					break;
+				}
+				std::copy( allElements.begin() + seriesStart               , allElements.begin() + seriesStart + seriesLength        , std::back_inserter( pair.first ) );
+
+				if ( ( seriesStart + ( seriesLength* 2 ) ) > allElements.size()  )
+				{
+					std::cout << "Could not copy full length for second pair, skipping\n";
+					break;
+				}
+				std::copy( allElements.begin() + seriesStart + seriesLength, allElements.begin() + seriesStart + ( seriesLength * 2 ), std::back_inserter( pair.second ) );
+
+				result.push_back( pair );
+			}
+
+			PrintPairs( result );
+
+			// Merge and add pairs to allElements
+			AddPairsToVector( result, allElements );
+			result.clear();
+
+			seriesLength *= 2;
+			for ( const auto &i : allElements)
+				std::cout << i << ", ";
+
+			//std::cout << std::endl;
+			std::cin.ignore();
 		}
-
-		// Merge and add pairs to allElements
-		AddPairsToVector( result, allElements );
-
-		// Pass 2
-		// Split into pairs
-		seriesLength = 2;
-		result.clear();
-		for ( int32_t i = 0 ; ( i ) < allElements.size() ; ++i )
-		{
-			VecPair pair;
-
-			int32_t seriesStart = i * ( seriesLength * 2 );
-
-			if ( ( seriesStart + ( seriesLength* 2 ) ) > allElements.size()  )
-				break;
-
-			std::copy( allElements.begin() + seriesStart               , allElements.begin() + seriesStart + seriesLength        , std::back_inserter( pair.first ) );
-			std::copy( allElements.begin() + seriesStart + seriesLength, allElements.begin() + seriesStart + ( seriesLength * 2 ), std::back_inserter( pair.second ) );
-
-			result.push_back( pair );
-		}
-		PrintPairs( result );
-
-		// Merge and add pairs to allElements
-		AddPairsToVector( result, allElements );
-
-		for ( const auto &i : allElements)
-			std::cout << i << std::endl;
 	}
 	private:
 	void PrintPairs( const std::deque< VecPair > &result )
