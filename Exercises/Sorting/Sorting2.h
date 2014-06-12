@@ -100,13 +100,16 @@ class Sorting2
 	// 	Mergin two list will run in O( n ) time since the lists are sorted
 	void MergeSort()
 	{
-		int32_t numElements = 32;
+		int32_t numElements = 31;
 
 		std::deque< int32_t > allElements( numElements  );
 		std::generate_n( std::begin( allElements ), numElements, [](){ return rand() % 1000; } );
 		std::deque< VecPair > result;
 
-		for ( const auto &p : allElements ) std::cout << p << std::endl;
+		for ( const auto &p : allElements )
+			std::cout << p << ", ";
+
+		std::cout << std::endl;
 
 		int32_t seriesLength = 1;
 		while ( seriesLength < numElements )
@@ -123,7 +126,11 @@ class Sorting2
 					std::cout << "Series start " << seriesStart << std::endl;
 					std::cout << "Series end " << seriesStart + seriesLength  << " size of list is " << allElements.size() << std::endl;
 
-					std::copy( allElements.begin() + seriesStart               , allElements.begin() + seriesStart + seriesLength        , std::back_inserter( pair.first ) );
+					std::copy(
+						allElements.begin() + seriesStart,
+						allElements.end(),//- 1,
+						std::back_inserter( pair.first )
+					);
 					result.push_back( pair );
 
 					break;
@@ -133,26 +140,33 @@ class Sorting2
 				if ( ( seriesStart + ( seriesLength* 2 ) ) > allElements.size()  )
 				{
 					std::cout << "Could not copy full length for second pair, skipping\n";
+					std::copy(
+						allElements.begin() + seriesStart + seriesLength,
+						allElements.end(),// - 1,
+						std::back_inserter( pair.second )
+					);
+
+					result.push_back( pair );
 					break;
 				}
-				std::copy( allElements.begin() + seriesStart + seriesLength, allElements.begin() + seriesStart + ( seriesLength * 2 ), std::back_inserter( pair.second ) );
+				else 
+					std::copy( allElements.begin() + seriesStart + seriesLength, allElements.begin() + seriesStart + ( seriesLength * 2 ), std::back_inserter( pair.second ) );
 
 				result.push_back( pair );
 			}
 
 			PrintPairs( result );
 
-			// Merge and add pairs to allElements
+			// Merge and add pcers hairs to allElements
 			AddPairsToVector( result, allElements );
 			result.clear();
 
 			seriesLength *= 2;
-			for ( const auto &i : allElements)
-				std::cout << i << ", ";
-
-			//std::cout << std::endl;
-			std::cin.ignore();
 		}
+
+		for ( const auto &i : allElements)
+			std::cout << i << ", ";
+		std::cout << std::endl;
 	}
 	private:
 	void PrintPairs( const std::deque< VecPair > &result )
@@ -207,7 +221,6 @@ class Sorting2
 	std::vector< int32_t > MergeLists( std::vector< int32_t > list1, std::vector< int32_t > list2 )
 	{
 		std::vector< int32_t > mergedList;
-		//mergedList.reserve( elementCount * 2 );
 		mergedList.reserve( 2 );
 
 		while ( !list1.empty() || !list2.empty() )
