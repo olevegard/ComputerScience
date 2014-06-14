@@ -12,10 +12,10 @@ class Sorting2
 
 	public:
 	Sorting2()
-		:	elementCount( 100 )
+		:	elementCount( 1000 )
 		,	data( elementCount, 0 )
 	{
-		std::generate_n( std::begin( data ), elementCount, [](){ return rand() % 1000; } );
+		std::generate_n( std::begin( data ), elementCount, [](){ return rand() % 100000; } );
 
 		std::cout << "======================================================== Insertion Sort ========================================================\n";
 		InsertionSort( );
@@ -25,6 +25,9 @@ class Sorting2
 
 		std::cout << "======================================================== Merge Sort ========================================================\n";
 		MergeSort();
+
+		std::cout << "======================================================== Quick Sort ========================================================\n";
+		QuickSort();
 	}
 	void InsertionSort( )
 	{
@@ -100,13 +103,11 @@ class Sorting2
 	// 	Mergin two list will run in O( n ) time since the lists are sorted
 	void MergeSort()
 	{
-		int32_t numElements = 26;
-
 		std::deque< int32_t > allElements( data );
 		std::deque< VecPair > result;
 
 		int32_t seriesLength = 1;
-		while ( seriesLength < numElements )
+		while ( seriesLength < allElements.size() )
 		{
 			for ( int32_t i = 0 ;( i * seriesLength * 2 ) < allElements.size(); ++i )
 			{
@@ -142,11 +143,11 @@ class Sorting2
 			seriesLength *= 2;
 		}
 
-/*
-		for ( const auto &i : allElements)
-			std::cout << i << ", ";
-		std::cout << std::endl;
-		*/
+		std::cout << "Sorted? " << std::boolalpha << std::is_sorted( allElements.begin(), allElements.end() ) << std::endl;
+	}
+	void QuickSort( )
+	{
+		std::deque< int32_t > allElements( data );
 	}
 	private:
 	void PrintPairs( const std::deque< VecPair > &result )
