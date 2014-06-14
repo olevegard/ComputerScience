@@ -12,10 +12,10 @@ class Sorting2
 
 	public:
 	Sorting2()
-		:	elementCount( 1000 )
+		:	elementCount( 32 )
 		,	data( elementCount, 0 )
 	{
-		std::generate_n( std::begin( data ), elementCount, [](){ return rand() % 100000; } );
+		std::generate_n( std::begin( data ), elementCount, [](){ return rand() % 100; } );
 
 		std::cout << "======================================================== Insertion Sort ========================================================\n";
 		InsertionSort( );
@@ -110,31 +110,7 @@ class Sorting2
 		while ( seriesLength < allElements.size() )
 		{
 			for ( int32_t i = 0 ;( i * seriesLength * 2 ) < allElements.size(); ++i )
-			{
-				int32_t seriesStart = i * ( seriesLength * 2 );
-
-				VecPair pair;
-
-				if ( seriesStart + seriesLength >= allElements.size()  )
-				{
-					std::copy( allElements.begin() + seriesStart, allElements.end(), std::back_inserter( pair.first ) );
-					result.push_back( pair );
-
-					break;
-				}
-				std::copy( allElements.begin() + seriesStart, allElements.begin() + seriesStart + seriesLength, std::back_inserter( pair.first ) );
-
-				if ( ( seriesStart + ( seriesLength* 2 ) ) > allElements.size()  )
-				{
-					std::copy( allElements.begin() + seriesStart + seriesLength, allElements.end(), std::back_inserter( pair.second ) );
-					result.push_back( pair );
-
-					break;
-				}
-
-				std::copy( allElements.begin() + seriesStart + seriesLength, allElements.begin() + seriesStart + ( seriesLength * 2 ), std::back_inserter( pair.second ) );
-				result.push_back( pair );
-			}
+				result.push_back( SplitIntoNewLists( allElements, i, seriesLength ) );
 
 			// Merge and add pcers hairs to allElements
 			AddPairsToVector( result, allElements );
@@ -150,6 +126,31 @@ class Sorting2
 		std::deque< int32_t > allElements( data );
 	}
 	private:
+	VecPair SplitIntoNewLists( const std::deque< int32_t > &input, int32_t index, int32_t seriesLength )
+	{
+		int32_t seriesStart = index * ( seriesLength * 2 );
+
+		VecPair pair;
+
+		if ( seriesStart + seriesLength >= input.size()  )
+		{
+			std::copy( input.begin() + seriesStart, input.end(), std::back_inserter( pair.first ) );
+
+			return pair;
+		}
+		std::copy( input.begin() + seriesStart, input.begin() + seriesStart + seriesLength, std::back_inserter( pair.first ) );
+
+		if ( ( seriesStart + ( seriesLength* 2 ) ) > input.size()  )
+		{
+			std::copy( input.begin() + seriesStart + seriesLength, input.end(), std::back_inserter( pair.second ) );
+
+			return pair;
+		}
+
+		std::copy( input.begin() + seriesStart + seriesLength, input.begin() + seriesStart + ( seriesLength * 2 ), std::back_inserter( pair.second ) );
+
+		return pair;
+	}
 	void PrintPairs( const std::deque< VecPair > &result )
 	{
 		std::cout << "=================================== Sorted Pairs ===================================\n";
@@ -186,16 +187,16 @@ class Sorting2
 		VecPair output;
 
 		std::move(
-			input.begin(),
-			input.begin() + input.size() / 2,
-			std::back_inserter ( output.first )
-		);
+				input.begin(),
+				input.begin() + input.size() / 2,
+				std::back_inserter ( output.first )
+				);
 
 		std::move(
-			input.begin() + input.size() / 2,
-			input.end(),
-			std::back_inserter ( output.second )
-		);
+				input.begin() + input.size() / 2,
+				input.end(),
+				std::back_inserter ( output.second )
+				);
 
 		return output;
 	}
