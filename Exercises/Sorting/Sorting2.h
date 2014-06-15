@@ -104,22 +104,20 @@ class Sorting2
 	void MergeSort()
 	{
 		std::deque< int32_t > allElements( data );
-		std::deque< VecPair > result;
 
 		int32_t seriesLength = 1;
 		while ( seriesLength < allElements.size() )
 		{
+			std::deque< VecPair > result;
+
 			for ( int32_t i = 0 ;( i * seriesLength * 2 ) < allElements.size(); ++i )
 				result.push_back( SplitIntoNewLists( allElements, i, seriesLength ) );
 
-			// Merge and add pcers hairs to allElements
+			// Merge and add elements to allElements
 			AddPairsToVector( result, allElements );
-			result.clear();
 
 			seriesLength *= 2;
 		}
-
-		std::cout << "Sorted? " << std::boolalpha << std::is_sorted( allElements.begin(), allElements.end() ) << std::endl;
 	}
 	void QuickSort( )
 	{
