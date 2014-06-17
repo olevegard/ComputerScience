@@ -12,7 +12,7 @@ class Sorting2
 
 	public:
 	Sorting2()
-		:	elementCount( 32 )
+		:	elementCount( 8 )
 		,	data( elementCount, 0 )
 	{
 		std::generate_n( std::begin( data ), elementCount, [](){ return rand() % 100; } );
@@ -122,8 +122,65 @@ class Sorting2
 	void QuickSort( )
 	{
 		std::deque< int32_t > allElements( data );
+		int32_t pivot = 1;//allElements.size() / 2 ;
+		int32_t pivotValue = allElements[ pivot ];
+		int32_t wall = 0;
+
+		for ( const auto &i : allElements )
+			std::cout << i << std::endl;
+		std::cout << "========================================================\n";
+
+		std::cout << "Pivot is " << allElements[ pivot ] << " which has the index " << pivot << std::endl;
+
+		// Find all element smaller than pivot 
+		for ( int32_t i = 0 ; i < allElements.size() ; ++i )
+		{
+			if ( allElements[i] < pivotValue )
+			{
+				std::cout << allElements[i] << " is smaller than pivot, switching " << i << " with " << wall << std::endl << std::endl;
+				std::swap ( allElements[i], allElements[wall] );
+				++wall;
+				++pivot;
+
+				PrintWithWall( allElements, wall );
+				std::cin.ignore();
+			}
+		}
+
+		std::swap( allElements[wall], allElements[pivot] );
+		PrintWithWall( allElements, wall );
+
+		pivot = allElements.size() - 1;
+		pivotValue = allElements[ pivot ];
+
+		std::cout << "\n\nSecond iteration\n";
+		std::cout << "Pivot is " << allElements[ pivot ] << " which has the index " << pivot << std::endl;
+
+		for ( int32_t i = wall ; i < allElements.size() ; ++i )
+		{
+			if ( allElements[i] < pivotValue )
+			{
+				std::cout << allElements[i] << " is smaller than pivot, switching " << i << " with " << wall << std::endl << std::endl;
+				std::swap ( allElements[i], allElements[wall] );
+				++wall;
+				++pivot;
+
+				PrintWithWall( allElements, wall );
+				std::cin.ignore();
+			}
+		}
 	}
 	private:
+	void PrintWithWall( const std::deque< int32_t > &input, int32_t wall )
+	{
+		for ( int32_t j = 0 ; j < input.size() ; ++j )
+		{
+			if ( j == wall )
+				std::cout << "| ";
+			std::cout << input[ j ] << " ";
+		}
+		std::cout << "\n========================================================\n";
+	}
 	VecPair SplitIntoNewLists( const std::deque< int32_t > &input, int32_t index, int32_t seriesLength )
 	{
 		int32_t seriesStart = index * ( seriesLength * 2 );
