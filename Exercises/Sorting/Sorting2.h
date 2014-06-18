@@ -5,6 +5,7 @@
 #pragma once
 
 #include <deque>
+#include <iomanip>
 
 class Sorting2
 {
@@ -12,9 +13,12 @@ class Sorting2
 
 	public:
 	Sorting2()
-		:	elementCount( 8 )
+		:	elementCount( 32 )
 		,	data( elementCount, 0 )
 	{
+		int32_t seed = time( 0 );
+		std::cout << "Seed is " << seed << std::endl;
+		srand( seed );
 		std::generate_n( std::begin( data ), elementCount, [](){ return rand() % 100; } );
 
 		std::cout << "======================================================== Insertion Sort ========================================================\n";
@@ -122,64 +126,71 @@ class Sorting2
 	void QuickSort( )
 	{
 		std::deque< int32_t > allElements( data );
-		int32_t pivot = 1;//allElements.size() / 2 ;
-		int32_t pivotValue = allElements[ pivot ];
+		//int32_t pivot = 1;//allElements.size() / 2 ;
+		int32_t pivot = allElements.size() / 2 ;
+
+
 		int32_t wall = 0;
 
-		for ( const auto &i : allElements )
-			std::cout << i << std::endl;
-		std::cout << "========================================================\n";
-
 		std::cout << "Pivot is " << allElements[ pivot ] << " which has the index " << pivot << std::endl;
+		PrintWithWall( allElements, wall, pivot );
+		std::cout << "\n========================================================\n";
 
-		// Find all element smaller than pivot 
-		for ( int32_t i = 0 ; i < allElements.size() ; ++i )
-		{
-			if ( allElements[i] < pivotValue )
-			{
-				std::cout << allElements[i] << " is smaller than pivot, switching " << i << " with " << wall << std::endl << std::endl;
-				std::swap ( allElements[i], allElements[wall] );
-				++wall;
-				++pivot;
+		QuickSort( allElements, wall, pivot, allElements.size() );
 
-				PrintWithWall( allElements, wall );
-				std::cin.ignore();
-			}
-		}
+/*
+		std::deque< int32_t > preWall;
+		std::move( allElements.begin(), allElements.begin() + wall, std::back_inserter( preWall ) );
+		allElements.erase( allElements.begin(), allElements.begin() + wall ); 
+		//std::swap_ranges( allElements.begin(), allElements.begin() + wall, std::back_inserter( preWall ) );
 
-		std::swap( allElements[wall], allElements[pivot] );
-		PrintWithWall( allElements, wall );
-
-		pivot = allElements.size() - 1;
-		pivotValue = allElements[ pivot ];
-
-		std::cout << "\n\nSecond iteration\n";
-		std::cout << "Pivot is " << allElements[ pivot ] << " which has the index " << pivot << std::endl;
-
-		for ( int32_t i = wall ; i < allElements.size() ; ++i )
-		{
-			if ( allElements[i] < pivotValue )
-			{
-				std::cout << allElements[i] << " is smaller than pivot, switching " << i << " with " << wall << std::endl << std::endl;
-				std::swap ( allElements[i], allElements[wall] );
-				++wall;
-				++pivot;
-
-				PrintWithWall( allElements, wall );
-				std::cin.ignore();
-			}
-		}
+		PrintWithWall( preWall, 1000 );
+		PrintWithWall( allElements, 1000 );
+		*/
 	}
 	private:
-	void PrintWithWall( const std::deque< int32_t > &input, int32_t wall )
+	void QuickSort( std::deque< int32_t > &input, int32_t &wall, int32_t &pivot, int32_t end  )
+	{
+		for ( int32_t i = 0 ; i < end; ++i )
+		{
+			if ( input[i] < input[pivot] && i != pivot )
+			{
+				std::cout << std::setw( 2 ) << input[i] << " is smaller than pivot "
+					<< input[pivot]    << " [ " << pivot << " ], swapping "
+					<< std::setw( 2 ) << input[i]    << " [ " << std::setw( 2 ) << i     << " ] with "
+					<< std::setw( 2 ) << input[wall] << " [ " << std::setw( 2 ) << wall  << " ]\n";
+				std::swap ( input[i], input[wall] );
+				++wall;
+				if ( wall > pivot )
+					pivot = i;
+			}
+		}
+		std::cout << "======================================================================\n";
+		PrintWithWall( input, wall, pivot );
+		std::cout << "\n";
+		std::swap( input[wall], input[pivot] );
+		pivot = wall;
+		PrintWithWall( input, wall, pivot );
+
+		std::cin.ignore();
+	}
+	
+	void PrintWithWall( const std::deque< int32_t > &input, int32_t wall, int32_t pivot )
 	{
 		for ( int32_t j = 0 ; j < input.size() ; ++j )
 		{
 			if ( j == wall )
 				std::cout << "| ";
-			std::cout << input[ j ] << " ";
+			if ( j == pivot )
+				std::cout << "{";
+				
+			std::cout << input[ j ];
+
+			if ( j == pivot )
+				std::cout << "}";
+
+			std::cout << " ";
 		}
-		std::cout << "\n========================================================\n";
 	}
 	VecPair SplitIntoNewLists( const std::deque< int32_t > &input, int32_t index, int32_t seriesLength )
 	{
